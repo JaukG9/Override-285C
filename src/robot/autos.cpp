@@ -23,6 +23,8 @@ void skills(){}
  *
  * 
  */
+int autonomousSelection = 0;
+
 void autonSelector(void*){
     int autonomousType = 0;
     autonomousSelection = -1;
