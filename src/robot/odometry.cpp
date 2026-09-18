@@ -4,7 +4,6 @@
 #include "robot/odometry.h"
 
 // odometry
-pros::Imu imu(11);
 pros::Rotation vertical_sensor(2);
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_sensor, 2, 0);
 

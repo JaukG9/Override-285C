@@ -45,6 +45,8 @@ pros::adi::DigitalOut toggle_1('E');
 pros::adi::DigitalOut toggle_2('F');
 
 /* init sensors */
-
+pros::Imu imu(18);
+pros::AIVision aivision_back(3);
+pros::AIVision aivision_side(8);
 
 /* global variables */
