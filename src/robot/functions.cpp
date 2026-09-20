@@ -32,3 +32,17 @@ void tank(){
 
     chassis.tank(axisL, axisR); // tank drive
 }
+
+void lift_pos(double height){
+    do_lift_PID = true;
+    target = std::min(height, 0.0);
+}
+
+void lift_manual(bool up){
+    do_lift_PID = false;
+    if(up){
+        lift.move(127);
+    }else{
+        lift.move(-127);
+    }
+}

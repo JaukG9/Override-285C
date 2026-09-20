@@ -73,3 +73,7 @@ class CustomChassis : public lemlib::Chassis{
 };
 
 extern CustomChassis chassis;
+
+extern double target;
+extern bool do_lift_PID;
+void lift_PID(void*);

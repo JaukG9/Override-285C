@@ -5,3 +5,5 @@
 #include "robot/robot-config.h"
 
 void tank();
+void lift_pos(double height);
+void lift_manual(bool up);

@@ -1,9 +1,11 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "robot/robot-config.h"
 #include "robot/drivetrain.h"
 #include "robot/odometry.h"
 
-// odometry
+/* ODOMETRY FOR THE DRIVETRAIN */
+// sensors
 pros::Rotation vertical_sensor(2);
 lemlib::TrackingWheel vertical_tracking_wheel(&vertical_sensor, 2, 0);
 
@@ -54,3 +56,42 @@ CustomChassis chassis(drivetrain, // drivetrain settings
                         &steer_curve,
                         &steer_curve
 );
+
+
+/* ODOMETRY FOR THE LIFT */
+double target = 0.0;
+bool do_lift_PID = true;
+const double kP = 0.0, kI = 0.0, kD = 0.0, kG = 0.0;
+
+void lift_PID(void*){
+    double error = 0.0;
+    double prev_error = 0.0;
+    double integral = 0.0;
+    double derivative = 0.0;
+    const int dt = 0.0;
+
+    while(true){
+        double pos = potentiometer.get_value();
+        error = target - pos;
+
+        if(std::abs(error) < 100){
+            integral += error * dt;
+        }else{
+            integral = 0;
+        }
+
+        derivative = (error - prev_error) / dt;
+        prev_error = error;
+
+        double pid = (error * kP) + (integral * kI) + (derivative * kD) + kG;
+
+        if(pid > 127){
+            pid = 127;
+        }else if(pid < -127){
+            pid = -127;
+        }
+
+        lift.move(pid);
+        pros::delay(dt);
+    }
+}

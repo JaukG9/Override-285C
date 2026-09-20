@@ -48,5 +48,6 @@ pros::adi::DigitalOut toggle_2('F');
 pros::Imu imu(18);
 pros::AIVision aivision_back(3);
 pros::AIVision aivision_side(8);
+pros::ADIAnalogIn potentiometer(10);
 
 /* global variables */

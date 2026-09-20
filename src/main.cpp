@@ -16,6 +16,8 @@ void initialize(){
 	aivision_back.reset();
 	aivision_side.reset();
 	chassis.calibrate();
+
+	pros::Task run_lift(lift_PID);
 }
 
 /**

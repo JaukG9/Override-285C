@@ -23,3 +23,4 @@ extern pros::adi::DigitalOut toggle_2;
 extern pros::Imu imu;
 extern pros::AIVision aivision_back;
 extern pros::AIVision aivision_side;
+extern pros::ADIAnalogIn potentiometer;
