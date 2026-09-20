@@ -17,8 +17,8 @@ void initialize(){
 }
 
 /**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
+ * Runs while the robot is in the disabled state of the Field Management System
+ * or the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
 void disabled(){}
@@ -49,7 +49,6 @@ void competition_initialize(){
 void autonomous(){
 	// erase screen for autonomous start
 	pros::screen::erase();
-	autonomousSelection;
 
 	// run the selected autonomous routine
 	switch(autonomousSelection){
