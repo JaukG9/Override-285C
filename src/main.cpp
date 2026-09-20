@@ -13,6 +13,8 @@
  */
 void initialize(){
 	pros::lcd::initialize();
+	aivision_back.reset();
+	aivision_side.reset();
 	chassis.calibrate();
 }
 
@@ -73,13 +75,50 @@ void autonomous(){
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	while (true) {
-		// tank drive
-		tank();
+	// while (true) {
+	// 	// tank drive
+	// 	tank();
 
-		partner.clear();
-		partner.print(0, 0, "Battery: %d%%", 24);
+	// 	pros::AIVision::Object object = aivision_back.get_object(0);
+	// 	if (pros::AIVision::is_type(object, pros::AivisionDetectType::color)) {
+	// 		pros::lcd::print(0, "is color");
+	// 	} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::object)) {
+	// 		pros::lcd::print(0, "is object");
+	// 	} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::code)) {
+	// 		pros::lcd::print(0, "is code");
+	// 	} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::tag)) {
+	// 		pros::lcd::print(0, "is tag");
+	// 	} else {
+	// 		pros::lcd::print(0, "unknown");
+	// 	}
 
-		pros::delay(20); // 20ms downtime
+	// 	pros::delay(20); // 20ms downtime
+	// }
+
+	pros::AIVision aivision(2);
+	aivision.reset();
+
+	aivision.enable_detection_types(
+		pros::AivisionModeType::colors,
+		pros::AivisionModeType::objects,
+		pros::AivisionModeType::tags
+	);
+
+	while(true) {
+		auto objects = aivision.get_all_objects();
+		for (auto &object : objects) {
+			if (pros::AIVision::is_type(object, pros::AivisionDetectType::color)) {
+				printf("is color\n");
+			} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::code)) {
+				printf("is code\n");
+			} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::object)) {
+				printf("is object\n");
+			} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::tag)) {
+				printf("is tag\n");
+			} else {
+				printf("unknown\n");
+			}
+		}
+		pros::delay(200);
 	}
 }
