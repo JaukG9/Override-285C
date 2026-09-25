@@ -29,8 +29,8 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
 /* init motors */
-pros::MotorGroup left_mg({-19, -20}, pros::MotorGearset::blue); // left DT motors
-pros::MotorGroup right_mg({16, 17}, pros::MotorGearset::blue);  // right DT motors
+pros::MotorGroup left_mg({19, 20}, pros::MotorGearset::blue); // left DT motors
+pros::MotorGroup right_mg({-16, -17}, pros::MotorGearset::blue);  // right DT motors
 
 pros::MotorGroup lift({-11, 12}, pros::MotorGearset::blue);     // lift motors
 pros::Motor intake(15, pros::MotorGearset::blue);               // intake motor
