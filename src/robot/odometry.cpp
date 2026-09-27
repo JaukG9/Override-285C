@@ -71,10 +71,10 @@ void lift_PID(void*){
     const int dt = 0.0;
 
     while(true){
-        double pos = potentiometer.get_value();
+        double pos = rotation.get_position();
         error = target - pos;
 
-        if(std::abs(error) < 100){
+        if(std::abs(error) < 880){
             integral += error * dt;
         }else{
             integral = 0;
