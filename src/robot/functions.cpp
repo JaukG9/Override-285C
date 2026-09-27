@@ -5,6 +5,25 @@
 #include "robot/odometry.h"
 #include "robot/functions.h"
 
+bool right_arrow, L1, L2, R2, A = false;
+void get_inputs(void*){
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+        right_arrow = true;
+    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+        L1 = true;
+    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+        L2 = true;
+    }    
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+        R2 = true;
+    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+        A = true;
+    }
+}
+
 /**
  * @brief Translates controller input to drivetrain movements
  *
@@ -31,6 +50,10 @@ void tank(){
     }
 
     chassis.tank(axisL, axisR); // tank drive
+}
+
+double get_rotation(){
+    return rotation.get_position() / 100;
 }
 
 void lift_pos(double height){

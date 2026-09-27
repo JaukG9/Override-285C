@@ -29,8 +29,8 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 
 /* init motors */
-pros::MotorGroup left_mg({-19, -20}, pros::MotorGearset::blue); // left DT motors
-pros::MotorGroup right_mg({16, 17}, pros::MotorGearset::blue);  // right DT motors
+pros::MotorGroup left_mg({19, 20}, pros::MotorGearset::blue); // left DT motors
+pros::MotorGroup right_mg({-16, -17}, pros::MotorGearset::blue);  // right DT motors
 
 pros::MotorGroup lift({-11, 12}, pros::MotorGearset::blue);     // lift motors
 pros::Motor intake(15, pros::MotorGearset::blue);               // intake motor
@@ -38,16 +38,17 @@ pros::MotorGroup toggles({-1, 2}, pros::MotorGearset::green);   // toggle motors
 
 /* init pistons */
 pros::adi::DigitalOut claw('A');
-pros::adi::DigitalOut two_bar('B');
-pros::adi::DigitalOut brake_1('C');
-pros::adi::DigitalOut brake_2('D');
-pros::adi::DigitalOut toggle_1('E');
-pros::adi::DigitalOut toggle_2('F');
+pros::adi::DigitalOut claw_rotate('B');
+pros::adi::DigitalOut two_bar('C');
+pros::adi::DigitalOut brake_1('D');
+pros::adi::DigitalOut brake_2('E');
+pros::adi::DigitalOut toggle_1('F');
+pros::adi::DigitalOut toggle_2('G');
 
 /* init sensors */
 pros::Imu imu(18);
 pros::AIVision aivision_back(3);
 pros::AIVision aivision_side(8);
-pros::ADIAnalogIn potentiometer(10);
+pros::Rotation rotation(4);
 
 /* global variables */

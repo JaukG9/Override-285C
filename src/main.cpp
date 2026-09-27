@@ -16,6 +16,7 @@ void initialize(){
 	aivision_back.reset();
 	aivision_side.reset();
 	chassis.calibrate();
+	rotation.reset_position();
 
 	pros::Task run_lift(lift_PID);
 }
@@ -77,37 +78,35 @@ void autonomous(){
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	// josticks --> driving
+	// right arrow --> run the intake & move lift and claw to set height and open claw + a sensor to see and pick up object
+	// L2 --> down, L1 --> up
+	// R2 hold to open
+	// A --> force override prevent tipping algo
+
+	bool intaking = false;
+	pros::Task inputs(get_inputs);
+
 	while (true) {
 		// tank drive
 		tank();
+		
+		if(right_arrow){
+			lift_pos(20);
+			intaking = true;
+		}
+		
+		if(intaking && std::abs(get_rotation() - 20) < 1){
+			intaking = false;
+		}
+
+		if(L1 != L2 && !intaking){
+			lift_manual(L1);
+		}
+
+		claw.set_value(!(R2 || intaking));
+		claw_rotate.set_value(intaking);
 
 		pros::delay(20); // 20ms downtime
 	}
-
-	// pros::AIVision aivision(2);
-	// aivision.reset();
-
-	// aivision.enable_detection_types(
-	// 	pros::AivisionModeType::colors,
-	// 	pros::AivisionModeType::objects,
-	// 	pros::AivisionModeType::tags
-	// );
-
-	// while(true) {
-	// 	auto objects = aivision.get_all_objects();
-	// 	for (auto &object : objects) {
-	// 		if (pros::AIVision::is_type(object, pros::AivisionDetectType::color)) {
-	// 			printf("is color\n");
-	// 		} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::code)) {
-	// 			printf("is code\n");
-	// 		} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::object)) {
-	// 			printf("is object\n");
-	// 		} else if (pros::AIVision::is_type(object, pros::AivisionDetectType::tag)) {
-	// 			printf("is tag\n");
-	// 		} else {
-	// 			printf("unknown\n");
-	// 		}
-	// 	}
-	// 	pros::delay(200);
-	// }
 }
