@@ -71,27 +71,29 @@ void lift_PID(void*){
     const int dt = 0.0;
 
     while(true){
-        double pos = rotation.get_position();
-        error = target - pos;
+        if(do_lift_PID){
+            double pos = rotation.get_position();
+            error = target - pos;
 
-        if(std::abs(error) < 880){
-            integral += error * dt;
-        }else{
-            integral = 0;
+            if(std::abs(error) < 880){
+                integral += error * dt;
+            }else{
+                integral = 0;
+            }
+
+            derivative = (error - prev_error) / dt;
+            prev_error = error;
+
+            double pid = (error * kP) + (integral * kI) + (derivative * kD) + kG;
+
+            if(pid > 600){
+                pid = 600;
+            }else if(pid < -600){
+                pid = -600;
+            }
+
+            lift.move_velocity(pid);
+            pros::delay(dt);
         }
-
-        derivative = (error - prev_error) / dt;
-        prev_error = error;
-
-        double pid = (error * kP) + (integral * kI) + (derivative * kD) + kG;
-
-        if(pid > 127){
-            pid = 127;
-        }else if(pid < -127){
-            pid = -127;
-        }
-
-        lift.move(pid);
-        pros::delay(dt);
     }
 }

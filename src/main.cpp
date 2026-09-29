@@ -13,10 +13,10 @@
  */
 void initialize(){
 	pros::lcd::initialize();
-	aivision_back.reset();
-	aivision_side.reset();
-	chassis.calibrate();
-	rotation.reset_position();
+	// aivision_back.reset();
+	// aivision_side.reset();
+	// chassis.calibrate();
+	// rotation.reset_position();
 
 	pros::Task run_lift(lift_PID);
 }
@@ -86,11 +86,12 @@ void opcontrol() {
 
 	bool intaking = false;
 	pros::Task inputs(get_inputs);
+	do_lift_PID = false;
 
 	while (true) {
 		// tank drive
 		tank();
-		
+
 		if(right_arrow){
 			lift_pos(20);
 			intaking = true;
@@ -101,7 +102,10 @@ void opcontrol() {
 		}
 
 		if(L1 != L2 && !intaking){
+			do_lift_PID = false;
 			lift_manual(L1);
+		}else if(!intaking){
+			lift.move_velocity(0);
 		}
 
 		claw.set_value(!(R2 || intaking));

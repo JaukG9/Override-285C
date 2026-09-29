@@ -7,20 +7,22 @@
 
 bool right_arrow, L1, L2, R2, A = false;
 void get_inputs(void*){
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
-        right_arrow = true;
-    }
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-        L1 = true;
-    }
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-        L2 = true;
-    }    
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-        R2 = true;
-    }
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-        A = true;
+    while(true){
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+            right_arrow = true;
+        }else{right_arrow = false;}
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+            L1 = true;
+        }else{L1 = false;}
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+            L2 = true;
+        }else{L2 = false;}
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+            R2 = true;
+        }else{R2 = false;}
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+            A = true;
+        }else{A = false;}
     }
 }
 
@@ -64,8 +66,8 @@ void lift_pos(double height){
 void lift_manual(bool up){
     do_lift_PID = false;
     if(up){
-        lift.move(127);
+        lift.move_velocity(150);
     }else{
-        lift.move(-127);
+        lift.move_velocity(-100);
     }
 }
