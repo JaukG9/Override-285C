@@ -84,7 +84,7 @@ void opcontrol() {
 	// R2 hold to open
 	// A --> force override prevent tipping algo
 
-	bool intaking = false;
+	bool intaking, manual_lifting = false;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
@@ -103,8 +103,14 @@ void opcontrol() {
 
 		if(L1 != L2 && !intaking){
 			do_lift_PID = false;
+			manual_lifting = true;
 			lift_manual(L1);
 		}else if(!intaking){
+			if(manual_lifting){
+				manual_lifting = false;
+				do_lift_PID = true;
+				target = get_rotation();
+			}
 			lift.move_velocity(0);
 		}
 
