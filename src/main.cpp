@@ -103,8 +103,7 @@ void opcontrol() {
 
 		if(L1 != L2 && !intaking){
 			do_lift_PID = false;
-			manual_lifting = true;
-			lift_manual(L1);
+			lift_manual(L2);
 		}else if(!intaking){
 			if(manual_lifting){
 				manual_lifting = false;
