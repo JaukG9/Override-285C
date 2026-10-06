@@ -67,7 +67,9 @@ class CustomChassis : public lemlib::Chassis{
 
         turnToHeading(theta, timeout,
                       {.direction = params.direction,
-                       .maxSpeed = params.maxSpeed},
+                       .maxSpeed = params.maxSpeed,
+                       .minSpeed = minSpeed,
+                       .earlyExitRange = earlyExitRange},
                       async);
     }
 };
