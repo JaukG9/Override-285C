@@ -43,7 +43,6 @@ class CustomChassis : public lemlib::Chassis{
     public:
     using lemlib::Chassis::Chassis;
 
-    // Call this if you run a plain moveToPoint/turnToHeading/etc. between chained calls
     void resetChain(){
         lastTarget = std::nullopt;
         lastHeading = std::nullopt;
@@ -62,7 +61,6 @@ class CustomChassis : public lemlib::Chassis{
 
         if(params.chain){
             lastTarget = lemlib::Pose(x, y, 0);
-            // heading the robot ends up facing (0 deg = +y, clockwise positive)
             float travel = std::atan2(dx, dy) * 180.0f / M_PI;
             lastHeading = params.forwards ? travel : travel + 180.0f;
         } else {
@@ -106,7 +104,6 @@ class CustomChassis : public lemlib::Chassis{
     void chainToHeading(float theta, int timeout, ChainToHeadingParams params = {}, bool async = true){
         float startHeading = lastHeading.value_or(getPose().theta);
 
-        // wrapped so a 355 -> 5 turn counts as 10 degrees, not 350
         float distance = std::abs(wrap180(theta - startHeading));
         float actualMax = std::min((float) std::abs(params.maxSpeed), std::sqrt(500 * distance));
 
