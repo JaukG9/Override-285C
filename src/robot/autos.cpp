@@ -19,9 +19,9 @@ void skip(){}
 void skills(){}
 
 /**
+ * @brief runs the repeater autonomous routine
  * 
- * 
- * 
+ * Scores 3 pins from the initial pin, and two matchloaded pins.
  */
 void repeater_route(){
     // 1st loop
@@ -45,6 +45,7 @@ void repeater_route(){
     chassis.resetChain();
     chassis.chainToHeading(340, 750);
     chassis.moveToPoint(51, -33, 750);
+    score(2);
 }
 
 /**
