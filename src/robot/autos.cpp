@@ -21,7 +21,11 @@ void skills(){}
 /**
  * @brief displays auton selector so user can select autos from one program
  *
- * 
+ * Uses custom Button object to display 4 buttons to the screen where the user can
+ * choose which auton they use. The first screen displays options like (1) Left,
+ * (2) Right, (3) Skip, and (4) Skills. Options (3) and (4) choose their respective
+ * autonomous routines. Options (1) and (2) display 4 more options which are as
+ * follows (a) 4 Rush, (b) 7 Rush, (c) Split, (d) AWP.
  */
 int autonomousSelection = 0;
 
@@ -31,7 +35,10 @@ void autonSelector(void*){
     bool autonTypeSelected = false, autonSelected = false;
 
     Button autonType[] = {
-
+        Button(10, 10, 225, 105, "", pros::Color::pale_violet_red, pros::Color::black),
+        Button(245, 10, 225, 105, "", pros::Color::cyan, pros::Color::black),
+        Button(10, 125, 225, 105, "", pros::Color::white, pros::Color::black),
+        Button(245, 125, 225, 105, "", pros::Color::light_green, pros::Color::black)
     };
 
     pros::screen::set_pen(pros::Color::light_gray);
