@@ -19,6 +19,35 @@ void skip(){}
 void skills(){}
 
 /**
+ * 
+ * 
+ * 
+ */
+void repeater_route(){
+    // 1st loop
+    chassis.setPose(60, -56, 340);
+    chassis.moveToPoint(51, -33, 750);
+    chassis.chainToPoint(53, -35, 750);
+    chassis.chainToHeading(180, 750);
+    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
+    score(0);
+
+    // 2nd loop
+    chassis.resetChain();
+    chassis.chainToHeading(340, 750);
+    chassis.moveToPoint(51, -33, 750);
+    chassis.chainToPoint(53, -35, 750);
+    chassis.chainToHeading(180, 750);
+    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
+    score(1);
+
+    // 3rd loop
+    chassis.resetChain();
+    chassis.chainToHeading(340, 750);
+    chassis.moveToPoint(51, -33, 750);
+}
+
+/**
  * @brief displays auton selector so user can select autos from one program
  *
  * Uses custom Button object to display 4 buttons to the screen where the user can
