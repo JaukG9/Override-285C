@@ -5,6 +5,7 @@
 #include "robot/functions.h"
 #include "robot/odometry.h"
 #include "robot/autos.h"
+#include "robot/auto-pid.h"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -55,13 +56,16 @@ void autonomous(){
 	// erase screen for autonomous start
 	pros::screen::erase();
 
+	// tune the drive PIDs (REMOVE BEFORE COMP)
+	auto_PID();
+
 	// run the selected autonomous routine
-	switch(autonomousSelection){
-		case 0: ; break;
-		case 1: ; break;
-		case 2: ; break;
-		default: break;
-	}
+	// switch(autonomousSelection){
+	// 	case 0: ; break;
+	// 	case 1: ; break;
+	// 	case 2: ; break;
+	// 	default: break;
+	// }
 }
 
 /**

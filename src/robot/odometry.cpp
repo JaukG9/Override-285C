@@ -63,71 +63,6 @@ CustomChassis chassis(drivetrain, // drivetrain settings
                         &steer_curve
 );
 
-void auto_PID(){
-    bool ang_tuned = false;
-    bool lat_tuned = false;
-
-    // angular
-    while(!ang_tuned){
-        chassis.setPose(0, 0, 0);
-        chassis.turnToHeading(90, 1000);
-
-        std::vector<double> angles = {};
-        int numLoops = 0;
-
-        while(numLoops < 500){
-            angles.push_back(chassis.getPose().theta - 90);
-            pros::delay(2);
-        }
-
-        int maxFlips = 5;
-        int flips = 0;
-        int prev = 0;
-
-        bool oscillating = false, overshooting = false, undershooting = false;
-        
-        for(int i = 1; i < angles.size(); i++){
-            double diff = angles[i] - angles[i - 1];
-            if(std::abs(diff) < 1e-5) continue;
-            int curr = (diff >= 0) ? 1 : -1;
-            if(prev != 0 && curr != prev){
-                flips++;
-                if(flips > maxFlips){
-                    oscillating = true;
-                }
-            }
-            prev = curr;
-
-            int overshoots = 0, maxOvershoots = 0;
-            int undershoots = 0, maxUndershoots = 0;
-
-            if(curr == 1 && angles[i] > 0){
-                overshoots++;
-                overshooting = true;
-            }else if(overshooting){
-                maxOvershoots = overshoots;
-                overshoots = 0;
-                overshooting = false;
-            }
-
-            if(curr == -1 && angles[i] < 0){
-                undershoots++;
-                undershooting = true;
-            }else if(undershooting){
-                maxUndershoots = undershoots;
-                undershoots = 0;
-                undershooting = false;
-            }
-        }
-
-        if(oscillating){
-            a_kD += flips / 10;
-        }else if(maxOvershoots){
-            a_kP += 1;
-        }
-    }
-}
-
 /* ODOMETRY FOR THE LIFT */
 double target = 0.0;
 bool do_lift_PID = true;
@@ -138,7 +73,7 @@ void lift_PID(void*){
     double prev_error = 0.0;
     double integral = 0.0;
     double derivative = 0.0;
-    const int dt = 0.0;
+    const int dt = 20.0;
 
     while(true){
         if(do_lift_PID){
