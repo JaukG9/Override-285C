@@ -66,8 +66,8 @@ void lift_pos(double height){
 void lift_manual(bool up){
     do_lift_PID = false;
     if(up){
-        lift.move_velocity(150);
+        lift.move_velocity(200);
     }else{
-        lift.move_velocity(-100);
+        lift.move_velocity(-150);
     }
 }
