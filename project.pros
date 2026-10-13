@@ -636,8 +636,8 @@
     },
     "upload_options": {
       "description": "Override Program",
-      "icon": "pizza",
-      "slot": 3
+      "icon": "pros",
+      "slot": 2
     },
     "use_early_access": false
   }

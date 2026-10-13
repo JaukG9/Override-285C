@@ -7,7 +7,8 @@
 
 /* ODOMETRY FOR THE DRIVETRAIN */
 // sensors
-pros::Rotation horizontal_sensor(12);
+pros::Imu imu(9);
+pros::Rotation horizontal_sensor(4);
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_2, 0.206);
 
 // odometry settings (no vertical tracking wheels, so lemlib uses the drive motor encoders)
@@ -20,9 +21,9 @@ lemlib::OdomSensors sensors(
 );
 
 //lateral PID controller
-lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              3, // derivative gain (kD)
+                                              10, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -30,11 +31,12 @@ lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
+// 2.53, 0.101, 14.2
 
 // angular PID controller
-lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(5.11, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
+                                              11.1, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
@@ -42,20 +44,6 @@ lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-
-double l_kP = 10, l_kI = 0, l_kD = 3, a_kP = 2, a_kI = 0, a_kD = 10;
-
-// changes the drive PID gains on the chassis (only call when no motion is running)
-void set_drive_controllers(double new_l_kP, double new_l_kI, double new_l_kD, double new_a_kP, double new_a_kI, double new_a_kD){
-    l_kP = new_l_kP;
-    l_kI = new_l_kI;
-    l_kD = new_l_kD;
-    a_kP = new_a_kP;
-    a_kI = new_a_kI;
-    a_kD = new_a_kD;
-    set_lateral_gains(l_kP, l_kI, l_kD);
-    set_angular_gains(a_kP, a_kI, a_kD);
-}
 
 // steering curve
 lemlib::ExpoDriveCurve steer_curve(10, // joystick deadband out of 127
