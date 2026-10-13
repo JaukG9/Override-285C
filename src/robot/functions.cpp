@@ -60,7 +60,7 @@ double get_rotation(){
 
 void lift_pos(double height){
     do_lift_PID = true;
-    target = std::min(height, 0.0);
+    target = std::max(height, 0.0);
 }
 
 void lift_manual(bool up){

@@ -3,17 +3,18 @@
 #include "robot/robot-config.h"
 #include "robot/drivetrain.h"
 #include "robot/odometry.h"
+#include "robot/auto-pid.h"
 
 /* ODOMETRY FOR THE DRIVETRAIN */
 // sensors
-pros::Rotation vertical_sensor(2);
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_sensor, 2, 0);
+pros::Rotation horizontal_sensor(12);
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_2, 0.206);
 
-// odometry settings
+// odometry settings (no vertical tracking wheels, so lemlib uses the drive motor encoders)
 lemlib::OdomSensors sensors(
-    &vertical_tracking_wheel,   // vertical tracking wheel 1
+    nullptr,                    // vertical tracking wheel 1
     nullptr,                    // vertical tracking wheel 2
-    nullptr,                    // horizontal tracking wheel 1
+    &horizontal_tracking_wheel, // horizontal tracking wheel 1
     nullptr,                    // horizontal tracking wheel 2
     &imu                        // inertial sensor
 );
@@ -43,9 +44,17 @@ lemlib::ControllerSettings angular_controller(2, // proportional gain (kP)
 );
 
 double l_kP = 10, l_kI = 0, l_kD = 3, a_kP = 2, a_kI = 0, a_kD = 10;
-void set_drive_controllers(double l_kP, double l_kI, double l_kD, double a_kP, double a_kI, double a_kD){
-    lemlib::ControllerSettings lateral_controller(l_kP, l_kI, l_kD, 3, 1, 100, 3, 500, 0);
-    lemlib::ControllerSettings angular_controller(a_kP, a_kI, a_kD, 3, 1, 100, 3, 500, 0);
+
+// changes the drive PID gains on the chassis (only call when no motion is running)
+void set_drive_controllers(double new_l_kP, double new_l_kI, double new_l_kD, double new_a_kP, double new_a_kI, double new_a_kD){
+    l_kP = new_l_kP;
+    l_kI = new_l_kI;
+    l_kD = new_l_kD;
+    a_kP = new_a_kP;
+    a_kI = new_a_kI;
+    a_kD = new_a_kD;
+    set_lateral_gains(l_kP, l_kI, l_kD);
+    set_angular_gains(a_kP, a_kI, a_kD);
 }
 
 // steering curve
@@ -64,7 +73,7 @@ CustomChassis chassis(drivetrain, // drivetrain settings
 );
 
 /* ODOMETRY FOR THE LIFT */
-double target = 0.0;
+double target = 0.0;    // degrees (same units as get_rotation())
 bool do_lift_PID = true;
 const double kP = 0.0, kI = 0.0, kD = 0.0, kG = 0.0;
 
@@ -73,32 +82,38 @@ void lift_PID(void*){
     double prev_error = 0.0;
     double integral = 0.0;
     double derivative = 0.0;
-    const int dt = 20.0;
+    const int dt = 20;
 
     while(true){
-        if(do_lift_PID){
-            double pos = rotation.get_position();
-            error = target - pos;
+        // rotation sensor reads centidegrees, target is in degrees
+        double pos = rotation.get_position() / 100.0;
+        error = target - pos;
 
-            if(std::abs(error) < 880){
+        if(do_lift_PID){
+            if(std::abs(error) < 8.8){
                 integral += error * dt;
             }else{
                 integral = 0;
             }
 
             derivative = (error - prev_error) / dt;
-            prev_error = error;
 
             double pid = (error * kP) + (integral * kI) + (derivative * kD) + kG;
 
-            if(pid > 600){
-                pid = 600;
-            }else if(pid < -600){
-                pid = -600;
+            // green cartridge maxes out at 200rpm
+            if(pid > 200){
+                pid = 200;
+            }else if(pid < -200){
+                pid = -200;
             }
 
             lift.move_velocity(pid);
-            pros::delay(dt);
+        }else{
+            // start fresh when the PID turns back on (no leftover integral or derivative kick)
+            integral = 0;
         }
+
+        prev_error = error;
+        pros::delay(dt);
     }
 }

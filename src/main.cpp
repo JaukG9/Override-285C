@@ -56,8 +56,9 @@ void autonomous(){
 	// erase screen for autonomous start
 	pros::screen::erase();
 
-	// tune the drive PIDs (REMOVE BEFORE COMP)
-	auto_PID();
+	// tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
+	auto_angular_PID();
+	auto_lateral_PID();
 
 	// run the selected autonomous routine
 	// switch(autonomousSelection){
@@ -88,7 +89,7 @@ void opcontrol() {
 	// R2 hold to open
 	// A --> force override prevent tipping algo
 
-	bool intaking, manual_lifting = false;
+	bool intaking = false, manual_lifting = false;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
@@ -96,10 +97,10 @@ void opcontrol() {
 		// tank drive
 		tank();
 
-		if(right_arrow){
-			lift_pos(20);
-			intaking = true;
-		}
+		// if(right_arrow){
+		// 	lift_pos(20);
+		// 	intaking = true;
+		// }
 		
 		if(intaking && std::abs(get_rotation() - 20) < 1){
 			intaking = false;
@@ -107,14 +108,20 @@ void opcontrol() {
 
 		if(L1 != L2 && !intaking){
 			do_lift_PID = false;
+			manual_lifting = true;
 			lift_manual(L2);
 		}else if(!intaking){
+			// just let go of L1/L2: hold the lift where it stopped
 			if(manual_lifting){
 				manual_lifting = false;
-				do_lift_PID = true;
 				target = get_rotation();
+				do_lift_PID = true;
 			}
-			lift.move_velocity(0);
+
+			// only stop the lift here if the PID isn't holding it, otherwise they fight
+			if(!do_lift_PID){
+				lift.move_velocity(0);
+			}
 		}
 
 		claw.set_value(!(R2 || intaking));

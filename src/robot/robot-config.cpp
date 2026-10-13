@@ -33,8 +33,8 @@ pros::MotorGroup left_mg({16, 17}, pros::MotorGearset::blue);       // left DT m
 pros::MotorGroup right_mg({-19, -20}, pros::MotorGearset::blue);    // right DT motors
 
 pros::MotorGroup lift({11, -18}, pros::MotorGearset::green);        // lift motors
-pros::MotorGroup toggles({-1, 2}, pros::MotorGearset::green);       // toggle motors
-pros::Motor intake(15, pros::MotorGearset::blue);                   // intake motor
+//pros::MotorGroup toggles({-1, 2}, pros::MotorGearset::green);       // toggle motors
+//pros::Motor intake(15, pros::MotorGearset::blue);                   // intake motor
 
 /* init pistons */
 pros::adi::DigitalOut claw('A');
@@ -46,7 +46,7 @@ pros::adi::DigitalOut toggle_1('F');
 pros::adi::DigitalOut toggle_2('G');
 
 /* init sensors */
-pros::Imu imu(18);
+pros::Imu imu(15);
 pros::AIVision aivision_back(3);
 pros::AIVision aivision_side(8);
 pros::Rotation rotation(4);
