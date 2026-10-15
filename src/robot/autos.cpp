@@ -24,27 +24,29 @@ void skills(){}
  * Scores 3 pins from the initial pin, and two matchloaded pins.
  */
 void repeater_route(){
+    // timeouts are sized for a 4 motor drive (~24in drive = 1.5s, the curve to the goal = 3s)
     // 1st loop
     chassis.setPose(60, -56, 340);
-    chassis.moveToPoint(51, -33, 750);
+    chassis.moveToPoint(51, -33, 1500);
     chassis.chainToPoint(53, -35, 750);
-    chassis.chainToHeading(180, 750);
-    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
+    chassis.chainToHeading(180, 1000);
+    chassis.chainToPose(56, -56, 90, 3000, {.chain = false});
+    chassis.waitUntilDone(); // be there before scoring
     score(0);
 
     // 2nd loop
-    chassis.resetChain();
-    chassis.chainToHeading(340, 750);
-    chassis.moveToPoint(51, -33, 750);
+    chassis.chainToHeading(340, 1000);
+    chassis.moveToPoint(51, -33, 1500);
     chassis.chainToPoint(53, -35, 750);
-    chassis.chainToHeading(180, 750);
-    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
+    chassis.chainToHeading(180, 1000);
+    chassis.chainToPose(56, -56, 90, 3000, {.chain = false});
+    chassis.waitUntilDone();
     score(1);
 
     // 3rd loop
-    chassis.resetChain();
-    chassis.chainToHeading(340, 750);
-    chassis.moveToPoint(51, -33, 750);
+    chassis.chainToHeading(340, 1000);
+    chassis.moveToPoint(51, -33, 1500);
+    chassis.waitUntilDone();
     score(2);
 }
 
