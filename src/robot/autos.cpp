@@ -9,14 +9,19 @@
  *
  * 
  */
-void skip(){}
+void skip(){
+    chassis.setPose(0, 0, 0);
+    chassis.moveToPoint(0, 5, 1000);
+}
 
 /**
  * @brief runs the programming skills autonomous.
  *
  * 
  */
-void skills(){}
+void skills(){
+
+}
 
 /**
  * @brief runs the repeater autonomous routine
@@ -25,27 +30,59 @@ void skills(){}
  */
 void repeater_route(){
     // 1st loop
-    chassis.setPose(60, -56, 340);
-    chassis.moveToPoint(51, -33, 750);
-    chassis.chainToPoint(53, -35, 750);
-    chassis.chainToHeading(180, 750);
-    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
-    score(0);
+    chassis.setPose(61.5, -56, 270);
+    chassis.moveToPoint(48, -56, 2000);
+    chassis.turnToHeading(0, 800);
+    chassis.moveToPoint(48, -26, 2000);
+    chassis.waitUntilDone();
+    claw.set_value(false);
+    pros::delay(250);
 
     // 2nd loop
-    chassis.resetChain();
-    chassis.chainToHeading(340, 750);
-    chassis.moveToPoint(51, -33, 750);
-    chassis.chainToPoint(53, -35, 750);
-    chassis.chainToHeading(180, 750);
-    chassis.chainToPose(56, -56, 90, 1000, {.chain = false});
-    score(1);
+    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(64, -56, 1500);
+    lift.move_velocity(-30);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    pros::delay(200);
+
+    lift.move_velocity(50);
+    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    pros::delay(150);
+    lift.brake();
+    chassis.turnToHeading(0, 800);
+    lift.move_velocity(100);
+    chassis.moveToPoint(48, -26, 2000);
+    pros::delay(200);
+    lift.brake();
+    chassis.waitUntilDone();
+    lift.move_velocity(-100);
+    pros::delay(525);
+    claw.set_value(false);
 
     // 3rd loop
-    chassis.resetChain();
-    chassis.chainToHeading(340, 750);
-    chassis.moveToPoint(51, -33, 750);
-    score(2);
+    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(64, -56, 1500);
+    lift.move_velocity(-30);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    pros::delay(200);
+
+    lift.move_velocity(50);
+    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    pros::delay(150);
+    lift.brake();
+    chassis.turnToHeading(0, 800);
+    lift.move_velocity(100);
+    chassis.moveToPoint(48, -26, 2000);
+    pros::delay(200);
+    lift.brake();
+    chassis.waitUntilDone();
+    lift.move_velocity(-75);
+    pros::delay(325);
+    claw.set_value(false);
 }
 
 /**
@@ -65,10 +102,10 @@ void autonSelector(void*){
     bool autonTypeSelected = false, autonSelected = false;
 
     Button autonType[] = {
-        Button(10, 10, 225, 105, "", pros::Color::pale_violet_red, pros::Color::black),
-        Button(245, 10, 225, 105, "", pros::Color::cyan, pros::Color::black),
-        Button(10, 125, 225, 105, "", pros::Color::white, pros::Color::black),
-        Button(245, 125, 225, 105, "", pros::Color::light_green, pros::Color::black)
+        Button(10, 10, 225, 105, "Left", pros::Color::pale_violet_red, pros::Color::black),
+        Button(245, 10, 225, 105, "Right", pros::Color::cyan, pros::Color::black),
+        Button(10, 125, 225, 105, "Skip", pros::Color::white, pros::Color::black),
+        Button(245, 125, 225, 105, "Skills", pros::Color::light_green, pros::Color::black)
     };
 
     pros::screen::set_pen(pros::Color::light_gray);
@@ -88,13 +125,13 @@ void autonSelector(void*){
     Button* auton = nullptr;
     
     static Button leftAutons[] = {
-        Button(10, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
+        Button(10, 10, 225, 105, "Repeater", pros::Color::peach_puff, pros::Color::black),
         Button(245, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(10, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(245, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black)
     };
     static Button rightAutons[] = {
-        Button(10, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
+        Button(10, 10, 225, 105, "Repeater", pros::Color::peach_puff, pros::Color::black),
         Button(245, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(10, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(245, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black)

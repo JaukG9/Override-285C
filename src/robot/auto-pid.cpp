@@ -55,8 +55,8 @@ struct TuneSettings{
     int runs;               // runs per set of gains (averaged so one bad run doesn't throw it off)
     double tolerance;       // how close counts as "at the target" (matches the small error range)
     double band;            // noise band so jitter around the target doesn't count as a crossing
-    double min_kP, max_kP;
-    double max_kD;
+    double min_kP, max_kP;  // min & max kP
+    double max_kD;          // max kD
     int timeout;            // ms per motion
     int max_tests;          // most gain sets to try
     double ramp_step;       // kP multiplier per step while ramping up

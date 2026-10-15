@@ -26,6 +26,10 @@ void get_inputs(void*){
     }
 }
 
+void score(int height){
+
+}
+
 /**
  * @brief Translates controller input to drivetrain movements
  *
@@ -54,13 +58,20 @@ void tank(){
     chassis.tank(axisL, axisR); // tank drive
 }
 
+// degrees. the rotation sensor reports centidegrees (36000 per turn), so divide by 100
 double get_rotation(){
-    return rotation.get_position() / 100;
+    return rotation.get_position() / 100.0;
 }
 
+// lift height in inches (sensor goes 0 -> 33 deg over 0 -> 23.6 in)
+double get_lift_height(){
+    return get_rotation() * LIFT_IN_PER_DEG;
+}
+
+// height in inches
 void lift_pos(double height){
     do_lift_PID = true;
-    target = std::max(height, 0.0);
+    target = std::clamp(height, 0.0, LIFT_MAX_HEIGHT);
 }
 
 void lift_manual(bool up){

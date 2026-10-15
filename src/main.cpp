@@ -17,8 +17,9 @@ void initialize(){
 	// aivision_back.reset();
 	// aivision_side.reset();
 	chassis.calibrate();
-	// rotation.reset_position();
+	rotation.reset_position();
 
+	claw.set_value(true);
 	pros::Task run_lift(lift_PID);
 }
 
@@ -57,21 +58,24 @@ void autonomous(){
 	pros::screen::erase();
 
 	// tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
-	auto_angular_PID();
+	//auto_angular_PID();
 	//auto_lateral_PID();
 
-	// chassis.setPose(0, 0, 0);
-	// chassis.turnToHeading(90, 10000);
-	// while(true){
-	// 	controller.print(0, 0, "%.1f", chassis.getPose().theta);
-	// 	pros::delay(60);
-	// }
+	// // LIFT PID TEST
+	// do_lift_PID = true;
+	// target = 0.08;
+	// controller.print(0, 0, "%.3f, %.3f", target, rotation.get_angle());
+	// pros::delay(60);
+
+	do_lift_PID = false;
+	repeater_route();
 
 	// run the selected autonomous routine
 	// switch(autonomousSelection){
-	// 	case 0: ; break;
+	// 	case 0: skip(); break;
 	// 	case 1: ; break;
 	// 	case 2: ; break;
+	// 	case 9: skills(); break;
 	// 	default: break;
 	// }
 }
@@ -109,19 +113,19 @@ void opcontrol() {
 		// 	intaking = true;
 		// }
 		
-		if(intaking && std::abs(get_rotation() - 20) < 1){
+		if(intaking && std::abs(get_lift_height() - 20) < 0.5){
 			intaking = false;
 		}
 
 		if(L1 != L2 && !intaking){
 			do_lift_PID = false;
 			manual_lifting = true;
-			lift_manual(L2);
+			lift_manual(L2); // L1 = up, L2 = down
 		}else if(!intaking){
 			// just let go of L1/L2: hold the lift where it stopped
 			if(manual_lifting){
 				manual_lifting = false;
-				target = get_rotation();
+				target = get_lift_height();
 				do_lift_PID = true;
 			}
 

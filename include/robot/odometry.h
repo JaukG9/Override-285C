@@ -70,7 +70,7 @@ class CustomChassis : public lemlib::Chassis{
         moveToPoint(x, y, timeout,
                     {.forwards = params.forwards,
                      .maxSpeed = params.maxSpeed,
-                     .minSpeed = (int) minSpeed,
+                     .minSpeed = (float) minSpeed,
                      .earlyExitRange = earlyExitRange},
                     async);
     }
@@ -96,7 +96,7 @@ class CustomChassis : public lemlib::Chassis{
                     .horizontalDrift = params.horizontalDrift,
                     .lead = params.lead,
                     .maxSpeed = params.maxSpeed,
-                    .minSpeed = (int) minSpeed,
+                    .minSpeed = (float) minSpeed,
                     .earlyExitRange = earlyExitRange},
                    async);
     }
@@ -119,7 +119,7 @@ class CustomChassis : public lemlib::Chassis{
         turnToHeading(theta, timeout,
                       {.direction = params.direction,
                        .maxSpeed = params.maxSpeed,
-                       .minSpeed = (int) minSpeed,
+                       .minSpeed = (float) minSpeed,
                        .earlyExitRange = earlyExitRange},
                       async);
     }
@@ -127,6 +127,8 @@ class CustomChassis : public lemlib::Chassis{
 
 extern CustomChassis chassis;
 
+extern const double LIFT_MAX_HEIGHT;
+extern const double LIFT_IN_PER_DEG;
 extern double target;
 extern bool do_lift_PID;
 void lift_PID(void*);

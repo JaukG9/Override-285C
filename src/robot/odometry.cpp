@@ -4,6 +4,7 @@
 #include "robot/drivetrain.h"
 #include "robot/odometry.h"
 #include "robot/auto-pid.h"
+#include "robot/functions.h"
 
 /* ODOMETRY FOR THE DRIVETRAIN */
 // sensors
@@ -21,9 +22,9 @@ lemlib::OdomSensors sensors(
 );
 
 //lateral PID controller
-lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(6.3, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
+                                              4.7, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
@@ -31,16 +32,15 @@ lemlib::ControllerSettings lateral_controller(2, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-// 2.53, 0.101, 14.2
 
 // angular PID controller
-lemlib::ControllerSettings angular_controller(5.11, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(2.95, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              11.1, // derivative gain (kD)
+                                              18, // derivative gain (kD)
                                               3, // anti windup
-                                              1, // small error range, in degrees
+                                              1, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
-                                              3, // large error range, in degrees
+                                              3, // large error range, in inches
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
@@ -61,44 +61,54 @@ CustomChassis chassis(drivetrain, // drivetrain settings
 );
 
 /* ODOMETRY FOR THE LIFT */
-double target = 0.0;    // degrees (same units as get_rotation())
+// the lift is run in inches: the rotation sensor reads 0 -> 33 CENTIdegrees (0.33 deg, what
+// get_position() returns raw) over the lift's 0 -> 23.6 in. one sensor count is ~0.7in
+const double LIFT_MAX_HEIGHT = 23.6;    // inches
+const double LIFT_MAX_ANGLE = 0.33;     // degrees
+const double LIFT_IN_PER_DEG = LIFT_MAX_HEIGHT / LIFT_MAX_ANGLE;
+
+double target = 0.0;    // inches (same units as get_lift_height())
 bool do_lift_PID = true;
-const double kP = 0.0, kI = 0.0, kD = 0.0, kG = 0.0;
+
+// starting gains for 2 green (200rpm) motors. output is rpm and error is inches, so kP = rpm
+// per inch of error (full 200rpm from ~3.5in away), kD = rpm per in/s of closing speed (slows it
+// down before the target), kI = rpm per in*s (only builds up within 2in of the target).
+// kG is a constant rpm to hold against gravity. raise kG if the lift sags, raise kP if it's
+// slow, raise kD if it bounces at the target
+const double kP = 60.0, kI = 3.0, kD = 6.0, kG = 0.0;
 
 void lift_PID(void*){
     double error = 0.0;
     double prev_error = 0.0;
     double integral = 0.0;
     double derivative = 0.0;
-    const int dt = 20;
+    const int dt = 10;   // ms per loop (faster loop = faster reaction)
 
     while(true){
-        // rotation sensor reads centidegrees, target is in degrees
-        double pos = rotation.get_position() / 100.0;
-        error = target - pos;
+        error = target - get_lift_height();
 
         if(do_lift_PID){
-            if(std::abs(error) < 8.8){
-                integral += error * dt;
+            // time is in seconds so kI and kD are per second, not per 20ms loop
+            if(std::abs(error) < 2.0){
+                integral += error * dt / 1000.0;
             }else{
                 integral = 0;
             }
 
-            derivative = (error - prev_error) / dt;
+            // the sensor only has ~33 counts over the whole range, so the raw derivative spikes
+            // every time it ticks over. smooth it
+            double raw_derivative = (error - prev_error) / (dt / 1000.0);
+            derivative += 0.2 * (raw_derivative - derivative);
 
             double pid = (error * kP) + (integral * kI) + (derivative * kD) + kG;
 
-            // green cartridge maxes out at 200rpm
-            if(pid > 200){
-                pid = 200;
-            }else if(pid < -200){
-                pid = -200;
-            }
-
-            lift.move_velocity(pid);
+            // not capped at 200rpm: sent as voltage (60mV per "rpm", PROS limits it to +-12V),
+            // which responds faster than move_velocity's internal velocity loop
+            lift.move_voltage(pid * 60);
         }else{
             // start fresh when the PID turns back on (no leftover integral or derivative kick)
             integral = 0;
+            derivative = 0;
         }
 
         prev_error = error;

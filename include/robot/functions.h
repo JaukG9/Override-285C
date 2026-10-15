@@ -9,6 +9,7 @@ void tank();
 void score(int numStacked);
 
 double get_rotation();
+double get_lift_height();
 void lift_pos(double height);
 void lift_manual(bool up);
 
