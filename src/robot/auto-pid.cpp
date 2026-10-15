@@ -9,7 +9,8 @@
 // drive PID settings + gains (from odometry.cpp)
 extern lemlib::ControllerSettings lateral_controller;
 extern lemlib::ControllerSettings angular_controller;
-extern double l_kP, l_kI, l_kD, a_kP, a_kI, a_kD;
+// latest tuned gains (start from whatever the controllers in odometry.cpp are set to)
+double l_kP = 0, l_kI = 0, l_kD = 0, a_kP = 0, a_kI = 0, a_kD = 0;
 extern pros::Rotation horizontal_sensor;
 
 /* SETTING PID GAINS */
@@ -39,6 +40,8 @@ struct PIDTrial{
     int crossings = 0;          // times the robot crossed over the target
     double final_error = 0;     // error once stopped (+ = short of the target, - = past it)
     bool timed_out = false;     // motion hit its timeout instead of settling (usually oscillating)
+    double rise_time = -1;      // ms until the robot got within 10% of the target (-1 = never did)
+    bool stalled = false;       // robot barely moved (gains too weak to get going)
     double score = 0;           // lower is better
 };
 
@@ -56,10 +59,13 @@ struct TuneSettings{
     double max_kD;
     int timeout;            // ms per motion
     int max_tests;          // most gain sets to try
+    double ramp_step;       // kP multiplier per step while ramping up
+    double ramp_kD_ratio;   // kD = kP * this while ramping (keeps the ramp damped)
+    double fast_time;       // ms to get within 10% of the target that counts as "fast enough"
+    double kP_flex;         // 0 = ramp/search kP freely. otherwise kP stays within start/flex..start*flex
 };
 
 bool tune_aborted = false;
-bool odom_started = false;
 
 // stops the tuner and shows why on the terminal, brain, and controller
 void tune_error(const char* msg){
@@ -77,8 +83,8 @@ void tune_error(const char* msg){
 }
 
 /**
- * @brief calibrates + starts odometry the first time the tuner runs, and checks the
- * sensors the tuner needs are actually plugged in (so the robot can't run away
+ * @brief checks the sensors the tuner needs are plugged in and the IMU calibrated
+ * (chassis.calibrate() runs in initialize()) (so the robot can't run away
  * because odometry isn't updating)
  */
 bool start_odom(bool need_tracking_wheel){
@@ -89,14 +95,6 @@ bool start_odom(bool need_tracking_wheel){
     if(need_tracking_wheel && !horizontal_sensor.is_installed()){
         tune_error("no tracking wheel sensor");
         return false;
-    }
-
-    if(!odom_started){
-        // robot must be still while the IMU calibrates
-        pros::lcd::print(0, "auto PID: calibrating, don't touch");
-        chassis.calibrate();
-        odom_started = true;
-        pros::delay(500);
     }
 
     double heading = imu.get_heading();
@@ -117,7 +115,9 @@ bool start_odom(bool need_tracking_wheel){
 double score_trial(PIDTrial trial, TuneSettings settings){
     double error = trial.final_error / settings.tolerance;
     double overshoot = trial.overshoot / settings.tolerance;
-    return trial.exit_time + 250 * error * error + 200 * overshoot * overshoot;
+    // ringing back and forth is what makes an auton unreliable, so each extra crossing costs a lot
+    double ringing = 300 * std::max(0, trial.crossings - 1);
+    return trial.exit_time + 250 * error * error + 200 * overshoot * overshoot + ringing;
 }
 
 /**
@@ -153,9 +153,17 @@ PIDTrial record_trial(std::function<double()> get_error, double distance, TuneSe
             printf("[auto_PID] stopped with B\n");
             break;
         }
+        if(trial.rise_time < 0 && error <= distance * 0.1) trial.rise_time = elapsed;
+
+        // gains too weak to move the robot: not an error, the kP ramp just needs to go higher
         if(elapsed == 400 && error > distance * 0.97){
-            tune_error("robot isn't moving");
+            trial.stalled = true;
+            chassis.cancelAllMotions();
             break;
+        }
+        // way past the target: gains are clearly too high, cut the motion instead of letting it swing
+        if(-error > settings.tolerance * 10){
+            chassis.cancelAllMotions();
         }
         if(std::abs(error) > distance * 2){
             tune_error("odom is way off");
@@ -260,29 +268,63 @@ bool tune_controller(PIDGains& gains, TuneSettings settings,
         return trial;
     };
 
+    // kP held near where it started: no ramp, only kD (and a small kP trim) get tuned
+    bool kP_locked = settings.kP_flex > 0;
+    if(kP_locked){
+        settings.min_kP = gains.kP / settings.kP_flex;
+        settings.max_kP = gains.kP * settings.kP_flex;
+    }
+
     PIDGains start = {std::clamp(gains.kP, settings.min_kP, settings.max_kP), 0, gains.kD};
     if(start.kD <= 0) start.kD = start.kP;
     PIDGains best = start;
     PIDTrial best_trial = test_gains(best);
     double best_score = best_trial.score;
 
-    // coarse search first: kP doubling from min_kP, and for each kP, kD doubling until it
-    // stops overshooting (more kD after that just slows it down). friction makes in-between
-    // gains get stuck off target, so the fine search alone can get stuck near bad starting
-    // gains. this gets it started near the best region instead
-    for(double kP = settings.min_kP; kP <= settings.max_kP && !tune_aborted; kP *= 2){
-        for(double ratio = 3; ratio <= 48 && !tune_aborted; ratio *= 2){
-            PIDGains test = {kP, 0, std::min(kP * ratio, settings.max_kD)};
-            PIDTrial trial = test_gains(test);
-            if(tune_aborted) break;
+    // ramp kP up (kD scaled with it) until the motion is fast, or it starts overshooting /
+    // oscillating, which means the last kP was as high as it can go. runs a single motion per
+    // step (run 0) since only the speed matters here. the old way jumped around and could quit
+    // early; this keeps going until the robot is actually moving at a good speed
+    double ramp_kP = 0;
+    bool moved = false;
+    for(double kP = settings.min_kP; !kP_locked && kP <= settings.max_kP && !tune_aborted; kP *= settings.ramp_step){
+        PIDGains test = {kP, 0, std::min(kP * settings.ramp_kD_ratio, settings.max_kD)};
+        apply_gains(test);
+        PIDTrial trial = run_trial(0);
+        if(tune_aborted) break;
+        log_trial(settings, test, trial);
 
-            if(trial.score < best_score){
-                best = test;
-                best_trial = trial;
-                best_score = trial.score;
-            }
-            if((trial.overshoot <= settings.tolerance && trial.crossings < 2) || test.kD >= settings.max_kD) break;
+        if(trial.stalled) continue; // too weak to move, keep raising
+
+        moved = true;
+        if(trial.crossings >= 2 || trial.overshoot > settings.tolerance * 3) break; // too aggressive
+        ramp_kP = kP;
+        if(trial.rise_time >= 0 && trial.rise_time <= settings.fast_time) break;    // fast enough
+    }
+
+    if(kP_locked) ramp_kP = gains.kP;
+    if(!tune_aborted && !moved && !kP_locked){
+        tune_error("robot isn't moving");
+    }
+    if(tune_aborted){
+        apply_gains(gains);
+        return false;
+    }
+    if(ramp_kP <= 0) ramp_kP = settings.min_kP; // even the weakest gains overshot
+
+    // now find the kD that goes with that kP: doubling until it stops overshooting (more
+    // kD after that just slows it down)
+    for(double ratio = 1; ratio <= 48 && !tune_aborted; ratio *= 2){
+        PIDGains test = {ramp_kP, 0, std::min(ramp_kP * ratio, settings.max_kD)};
+        PIDTrial trial = test_gains(test);
+        if(tune_aborted) break;
+
+        if(trial.score < best_score){
+            best = test;
+            best_trial = trial;
+            best_score = trial.score;
         }
+        if((trial.overshoot <= settings.tolerance && trial.crossings < 2) || test.kD >= settings.max_kD) break;
     }
 
     // directions to step in: {kP, kD}, 1 = raise, -1 = lower, 0 = leave alone
@@ -345,6 +387,21 @@ bool tune_controller(PIDGains& gains, TuneSettings settings,
         }
     }
 
+    // safety margin: gains right on the edge of ringing will ring on some angle that wasn't
+    // tested, so back kP off a bit and keep that if it's about as fast or rings less
+    if(!tune_aborted){
+        PIDGains safe = best;
+        safe.kP = std::max(best.kP * 0.85, settings.min_kP);
+        if(safe.kP < best.kP){
+            PIDTrial trial = test_gains(safe);
+            if(!tune_aborted && (trial.crossings < best_trial.crossings || trial.score < best_score * 1.15)){
+                best = safe;
+                best_trial = trial;
+                best_score = trial.score;
+            }
+        }
+    }
+
     bool changed = best.kP != gains.kP || best.kI != gains.kI || best.kD != gains.kD;
     gains = best;
     apply_gains(gains);
@@ -353,7 +410,8 @@ bool tune_controller(PIDGains& gains, TuneSettings settings,
 
 // turns done for each set of angular gains. mostly 90, but tuning on only 90 makes gains
 // that are great at 90 and get stuck a few degrees off on smaller / bigger turns
-const double ANGULAR_TURNS[] = {90, 180, 45};
+const double ANGULAR_TURNS[] = {90, 180, 45, 20, 135};
+const int ANGULAR_TURN_COUNT = sizeof(ANGULAR_TURNS) / sizeof(ANGULAR_TURNS[0]);
 
 /**
  * @brief tunes the angular PID by turning 90 (plus a 180 and 45) over and over
@@ -368,7 +426,10 @@ void auto_angular_PID(){
     if(tune_aborted || !start_odom(false)) return;
 
     pros::lcd::print(0, "auto PID: tuning angular  (B = stop)");
-    TuneSettings settings = {"angular", 3, 1, 0.5, 1, 30, 450, 2000, 40};
+    TuneSettings settings = {"angular", 5, 1, 0.5, 1, 30, 450, 2000, 40, 1.4, 4, 400, 0};
+    a_kP = angular_controller.kP;
+    a_kI = angular_controller.kI;
+    a_kD = angular_controller.kD;
     PIDGains gains = {a_kP, a_kI, a_kD};
 
     tune_controller(gains, settings,
@@ -376,7 +437,7 @@ void auto_angular_PID(){
             set_angular_gains(gains.kP, gains.kI, gains.kD);
         },
         [settings](int run){
-            double angle = ANGULAR_TURNS[run % 3];
+            double angle = ANGULAR_TURNS[run % ANGULAR_TURN_COUNT];
             pros::delay(250); // let the robot come to rest
             chassis.setPose(0, 0, 0);
             chassis.turnToHeading(angle, settings.timeout);
@@ -401,7 +462,10 @@ void auto_lateral_PID(){
     if(tune_aborted || !start_odom(true)) return;
 
     pros::lcd::print(0, "auto PID: tuning lateral  (B = stop)");
-    TuneSettings settings = {"lateral", 2, 1, 0.3, 2, 60, 600, 3000, 40};
+    TuneSettings settings = {"lateral", 2, 1, 0.3, 2, 60, 600, 3000, 40, 1.4, 4, 800, 1.15};
+    l_kP = lateral_controller.kP;
+    l_kI = lateral_controller.kI;
+    l_kD = lateral_controller.kD;
     PIDGains gains = {l_kP, l_kI, l_kD};
 
     tune_controller(gains, settings,
@@ -414,8 +478,10 @@ void auto_lateral_PID(){
             chassis.moveToPoint(0, 48, settings.timeout);
             PIDTrial trial = record_trial([](){ return 48 - chassis.getPose().y; }, 48, settings);
 
-            // turn around so the next run drives back over the same 48in
-            if(!tune_aborted) chassis.turnToHeading(180, 1500, {}, false);
+            // turn around so the next run drives back over the same 48in: two separate 90s
+            // (each waits to finish) instead of one 180
+            if(!tune_aborted) chassis.turnToHeading(90, 1000, {}, false);
+            if(!tune_aborted) chassis.turnToHeading(180, 1000, {}, false);
             return trial;
         });
 

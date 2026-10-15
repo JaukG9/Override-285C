@@ -16,7 +16,7 @@ void initialize(){
 	pros::lcd::initialize();
 	// aivision_back.reset();
 	// aivision_side.reset();
-	// chassis.calibrate();
+	chassis.calibrate();
 	// rotation.reset_position();
 
 	pros::Task run_lift(lift_PID);
@@ -58,7 +58,14 @@ void autonomous(){
 
 	// tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
 	auto_angular_PID();
-	auto_lateral_PID();
+	//auto_lateral_PID();
+
+	// chassis.setPose(0, 0, 0);
+	// chassis.turnToHeading(90, 10000);
+	// while(true){
+	// 	controller.print(0, 0, "%.1f", chassis.getPose().theta);
+	// 	pros::delay(60);
+	// }
 
 	// run the selected autonomous routine
 	// switch(autonomousSelection){
