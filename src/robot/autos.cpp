@@ -29,6 +29,7 @@ void skills(){
  * Scores 3 pins from the initial pin, and two matchloaded pins.
  */
 void repeater_route(){
+    // timeouts are sized for a 4 motor drive (~24in drive = 1.5s, the curve to the goal = 3s)
     // 1st loop
     chassis.setPose(61.5, -56, 270);
     chassis.moveToPoint(48, -56, 2000);
