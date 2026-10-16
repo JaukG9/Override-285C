@@ -23,6 +23,7 @@ void get_inputs(void*){
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
             A = true;
         }else{A = false;}
+        pros::delay(10);
     }
 }
 
@@ -63,9 +64,24 @@ double get_rotation(){
     return rotation.get_position() / 100.0;
 }
 
-// lift height in inches (sensor goes 0 -> 33 deg over 0 -> 23.6 in)
+// average position of the lift motors in degrees (0 at the bottom, + = up).
+// NAN if neither motor is responding
+double get_lift_motor_deg(){
+    double total = 0;
+    int count = 0;
+    for(double pos : lift.get_position_all()){
+        if(std::isfinite(pos) && pos != PROS_ERR_F){
+            total += pos;
+            count++;
+        }
+    }
+    if(count == 0) return NAN;
+    return lift_motor_dir * total / count;
+}
+
+// lift height in inches, from the lift motor encoders
 double get_lift_height(){
-    return get_rotation() * LIFT_IN_PER_DEG;
+    return lift_deg_to_height(get_lift_motor_deg());
 }
 
 // height in inches
@@ -75,10 +91,14 @@ void lift_pos(double height){
 }
 
 void lift_manual(bool up){
-    do_lift_PID = false;
+    if(!do_lift_PID){
+        target = get_lift_height();
+    }
+
+    double height = get_lift_height();
     if(up){
-        lift.move_velocity(200);
+        lift_pos(std::min(target + 4.5, height + 9));
     }else{
-        lift.move_velocity(-150);
+        lift_pos(std::max(target - 3, height - 8));
     }
 }

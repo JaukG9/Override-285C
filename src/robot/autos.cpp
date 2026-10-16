@@ -24,67 +24,128 @@ void skills(){
 }
 
 /**
- * @brief runs the repeater autonomous routine
+ * @brief runs the left repeater autonomous routine
  * 
  * Scores 3 pins from the initial pin, and two matchloaded pins.
  */
-void repeater_route(){
-    // timeouts are sized for a 4 motor drive (~24in drive = 1.5s, the curve to the goal = 3s)
+void left_repeater_route(){
     // 1st loop
     chassis.setPose(61.5, -56, 270);
-    chassis.moveToPoint(48, -56, 2000);
-    chassis.turnToHeading(0, 800);
-    chassis.moveToPoint(48, -26, 2000);
+    chassis.moveToPoint(48, -56, 1000);
+    chassis.turnToHeading(0, 600);
+    chassis.moveToPoint(48, -26, 1200);
     chassis.waitUntilDone();
     claw.set_value(false);
     pros::delay(250);
 
     // 2nd loop
-    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    chassis.moveToPoint(48, -56, 1500, {.forwards = false});
     chassis.turnToHeading(90, 800);
-    chassis.moveToPoint(64, -56, 1500);
-    lift.move_velocity(-30);
+    chassis.moveToPoint(64, -56, 1000);
+    lift_pos(0);
     chassis.waitUntilDone();
     claw.set_value(true);
-    pros::delay(200);
+    pros::delay(150);
+    lift.brake();
 
-    lift.move_velocity(50);
-    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    lift_pos(2);
+    chassis.moveToPoint(48, -56, 1200, {.forwards = false});
     pros::delay(150);
     lift.brake();
     chassis.turnToHeading(0, 800);
-    lift.move_velocity(100);
-    chassis.moveToPoint(48, -26, 2000);
+    lift_pos(10);
+    chassis.moveToPoint(48, -26, 1200);
     pros::delay(200);
     lift.brake();
     chassis.waitUntilDone();
-    lift.move_velocity(-100);
-    pros::delay(525);
+    lift_pos(3);
+    pros::delay(100);
     claw.set_value(false);
 
     // 3rd loop
-    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    chassis.moveToPoint(48, -56, 1500, {.forwards = false});
+    lift_pos(0);
     chassis.turnToHeading(90, 800);
-    chassis.moveToPoint(64, -56, 1500);
-    lift.move_velocity(-30);
+    chassis.moveToPoint(64, -56, 1200);
     chassis.waitUntilDone();
     claw.set_value(true);
     pros::delay(200);
+    lift.brake();
 
-    lift.move_velocity(50);
-    chassis.moveToPoint(48, -56, 2000, {.forwards = false});
+    lift_pos(2);
+    chassis.moveToPoint(48, -56, 900, {.forwards = false});
     pros::delay(150);
     lift.brake();
-    chassis.turnToHeading(0, 800);
-    lift.move_velocity(100);
-    chassis.moveToPoint(48, -26, 2000);
+    chassis.turnToHeading(0, 600);
+    lift_pos(18);
+    chassis.moveToPoint(48, -26, 900);
+    chassis.waitUntilDone();
+    pros::delay(100);
+    claw.set_value(false);
+}
+
+/**
+ * @brief runs the left repeater autonomous routine
+ * 
+ * Scores 3 pins from the initial pin, and two matchloaded pins.
+ */
+void right_repeater_route(){
+    // 1st loop
+    chassis.setPose(61.5, 56, 270);
+    chassis.moveToPoint(48, 56, 1000);
+    chassis.turnToHeading(180, 600);
+    chassis.moveToPoint(48, 26, 1200);
+    chassis.waitUntilDone();
+    claw.set_value(false);
+    pros::delay(250);
+
+    // 2nd loop
+    chassis.moveToPoint(48, 56, 1500, {.forwards = false});
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(64, 56, 900);
+    lift_pos(0);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    pros::delay(150);
+    lift.brake();
+
+    lift_pos(2);
+    chassis.moveToPoint(48, 56, 1200, {.forwards = false});
+    pros::delay(150);
+    lift.brake();
+    chassis.turnToHeading(180, 800);
+    lift_pos(10);
+    chassis.moveToPoint(48, 26, 1200);
     pros::delay(200);
     lift.brake();
     chassis.waitUntilDone();
-    lift.move_velocity(-75);
-    pros::delay(325);
+    lift_pos(3);
+    pros::delay(100);
+    claw.set_value(false);
+
+    // 3rd loop
+    chassis.moveToPoint(48, 56, 1500, {.forwards = false});
+    lift_pos(0);
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(64, 56, 1200);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    pros::delay(200);
+    lift.brake();
+
+    lift_pos(2);
+    chassis.moveToPoint(48, 56, 900, {.forwards = false});
+    pros::delay(150);
+    lift.brake();
+    chassis.turnToHeading(180, 600);
+    lift_pos(18);
+    chassis.moveToPoint(48, 26, 900);
+    chassis.waitUntilDone();
+    pros::delay(200);
     claw.set_value(false);
 }
+
+
 
 /**
  * @brief displays auton selector so user can select autos from one program

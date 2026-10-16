@@ -57,18 +57,19 @@ void autonomous(){
 	// erase screen for autonomous start
 	pros::screen::erase();
 
-	// tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
+	// // tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
 	//auto_angular_PID();
 	//auto_lateral_PID();
 
-	// // LIFT PID TEST
-	// do_lift_PID = true;
-	// target = 0.08;
-	// controller.print(0, 0, "%.3f, %.3f", target, rotation.get_angle());
-	// pros::delay(60);
-
-	do_lift_PID = false;
-	repeater_route();
+	// chassis.setPose(0,0,0);
+	// chassis.moveToPoint(0, 48, 5000);
+	// for(int i = 0; i < 50; i++){
+	// 	controller.print(0, 0, "%.3f, %.3f, %.3f", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+	// 	pros::delay(50);
+	// }
+	
+	do_lift_PID = true;
+	left_repeater_route();
 
 	// run the selected autonomous routine
 	// switch(autonomousSelection){
@@ -96,10 +97,9 @@ void autonomous(){
 void opcontrol() {
 	// josticks --> driving
 	// right arrow --> run the intake & move lift and claw to set height and open claw + a sensor to see and pick up object
-	// L2 --> down, L1 --> up
+	// L2 --> up, L1 --> down
 	// R2 hold to open
 	// A --> force override prevent tipping algo
-
 	bool intaking = false, manual_lifting = false;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
@@ -120,16 +120,14 @@ void opcontrol() {
 		if(L1 != L2 && !intaking){
 			do_lift_PID = false;
 			manual_lifting = true;
-			lift_manual(L2); // L1 = up, L2 = down
+			lift_manual(L2);
 		}else if(!intaking){
-			// just let go of L1/L2: hold the lift where it stopped
 			if(manual_lifting){
 				manual_lifting = false;
 				target = get_lift_height();
 				do_lift_PID = true;
 			}
 
-			// only stop the lift here if the PID isn't holding it, otherwise they fight
 			if(!do_lift_PID){
 				lift.move_velocity(0);
 			}

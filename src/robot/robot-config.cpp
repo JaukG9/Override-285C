@@ -37,7 +37,7 @@ pros::MotorGroup lift({11, -18}, pros::MotorGearset::green);        // lift moto
 //pros::Motor intake(15, pros::MotorGearset::blue);                   // intake motor
 
 /* init pistons */
-pros::adi::DigitalOut claw('A');
+pros::adi::DigitalOut claw('H');
 pros::adi::DigitalOut claw_rotate('B');
 pros::adi::DigitalOut two_bar('C');
 pros::adi::DigitalOut brake_1('D');

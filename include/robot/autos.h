@@ -5,7 +5,8 @@
 
 void skip();
 void skills();
-void repeater_route();
+void left_repeater_route();
+void right_repeater_route();
 
 class Button{
     public:

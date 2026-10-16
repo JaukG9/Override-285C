@@ -160,7 +160,9 @@ class CustomChassis : public lemlib::Chassis{
 extern CustomChassis chassis;
 
 extern const double LIFT_MAX_HEIGHT;
-extern const double LIFT_IN_PER_DEG;
+extern const double LIFT_TOP_MOTOR_DEG;
+double lift_deg_to_height(double deg);
+extern int lift_motor_dir;
 extern double target;
 extern bool do_lift_PID;
 void lift_PID(void*);
