@@ -6,8 +6,6 @@
 
 void tank();
 
-void score(int numStacked);
-
 double get_rotation();
 double get_lift_motor_deg();
 double get_lift_height();

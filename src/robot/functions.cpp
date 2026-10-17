@@ -6,6 +6,12 @@
 #include "robot/functions.h"
 
 bool right_arrow, L1, L2, R2, A = false;
+
+/**
+ * @brief get controller inputs
+ * 
+ * Take contrller inputs and modify variables for use in main.
+ */
 void get_inputs(void*){
     while(true){
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
@@ -27,12 +33,8 @@ void get_inputs(void*){
     }
 }
 
-void score(int height){
-
-}
-
 /**
- * @brief Translates controller input to drivetrain movements
+ * @brief translates controller input to drivetrain movements
  *
  * This function detects vertical movements on the joysticks of the controller, and
  * based on how much each joystick is moved up or down, supplies voltage to the drivetrain
@@ -59,13 +61,22 @@ void tank(){
     chassis.tank(axisL, axisR); // tank drive
 }
 
-// degrees. the rotation sensor reports centidegrees (36000 per turn), so divide by 100
+/**
+ * @brief get rotation
+ * @return the rotation sensor's value in deg
+ * 
+ * Takes the rotation value of the rotation sensor.
+ */
 double get_rotation(){
     return rotation.get_position() / 100.0;
 }
 
-// average position of the lift motors in degrees (0 at the bottom, + = up).
-// NAN if neither motor is responding
+/**
+ * @brief gets lift motor pos (deg)
+ * @return the position of the lift motors
+ * 
+ * Avg. position of the lift motors in degrees (0 at bottom, + = up).
+ */
 double get_lift_motor_deg(){
     double total = 0;
     int count = 0;
@@ -79,18 +90,35 @@ double get_lift_motor_deg(){
     return lift_motor_dir * total / count;
 }
 
-// lift height in inches, from the lift motor encoders
+
+/**
+ * @brief get lift height
+ * @return the height in inches
+ * 
+ * Translate lift deg to height in inches.
+ */
 double get_lift_height(){
     return lift_deg_to_height(get_lift_motor_deg());
 }
 
-// height in inches
+/**
+ * @brief set lift to a designated height
+ * @param[in] height the designated height to lift to
+ * 
+ * Set target for the lift PID to the inputted height.
+ */
 void lift_pos(double height){
     do_lift_PID = true;
     target = std::clamp(height, 0.0, LIFT_MAX_HEIGHT);
 }
 
-// call every loop while the button is held: keeps the target a little ahead of the lift
+
+/**
+ * @brief manually run lift
+ * @param[in] up whether to lift up (true) or down (false)
+ * 
+ * Sets the PID target to a value up or down of the current one, to move manually.
+ */
 void lift_manual(bool up){
     double height = get_lift_height();
     lift_pos(up ? height + 4.5 : height - 3);
