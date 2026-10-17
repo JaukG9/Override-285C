@@ -121,5 +121,7 @@ void lift_pos(double height){
  */
 void lift_manual(bool up){
     double height = get_lift_height();
-    lift_pos(up ? height + 4.5 : height - 3);
+    if(height < 5 && !up){
+        lift.move_velocity(-60);
+    }else{lift.move_velocity(up ? 125 : -120);}
 }

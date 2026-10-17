@@ -20,7 +20,41 @@ void skip(){
  * 
  */
 void skills(){
+    // 1st loop
+    chassis.setPose(64.5, -46.35, 270);
+    lift_pos(1.5);
+    chassis.moveToPoint(48, -46.35, 1000);
+    chassis.turnToHeading(0, 600);
+    chassis.moveToPoint(48, -26, 1200);
+    chassis.waitUntilDone();
+    claw.set_value(false);
+    pros::delay(250);
 
+    // other loops
+    for(int i = 0; i < 5; i++){
+        chassis.moveToPoint(48, -56, 1500, {.forwards = false});
+        chassis.turnToHeading(90, 800);
+        chassis.moveToPoint(64, -56, 1000);
+        lift_pos(0);
+        chassis.waitUntilDone();
+        claw.set_value(true);
+        pros::delay(150);
+        lift.brake();
+
+        lift_pos(2);
+        chassis.moveToPoint(48, -56, 1200, {.forwards = false});
+        pros::delay(150);
+        lift.brake();
+        chassis.turnToHeading(0, 800);
+        lift_pos(10 + 8 * i);
+        chassis.moveToPoint(48, -26, 1200);
+        pros::delay(200);
+        lift.brake();
+        chassis.waitUntilDone();
+        lift_pos(4 + 8 * i);
+        pros::delay(200);
+        claw.set_value(false);
+    }
 }
 
 /**
@@ -30,8 +64,9 @@ void skills(){
  */
 void left_repeater_route(){
     // 1st loop
-    chassis.setPose(61.5, -56, 270);
-    chassis.moveToPoint(48, -56, 1000);
+    chassis.setPose(64.5, -46.35, 270);
+    lift_pos(1.5);
+    chassis.moveToPoint(48, -46.35, 1000);
     chassis.turnToHeading(0, 600);
     chassis.moveToPoint(48, -26, 1200);
     chassis.waitUntilDone();

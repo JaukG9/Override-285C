@@ -69,7 +69,7 @@ void autonomous(){
 		case 1: left_repeater_route(); break;
 		case 2: right_repeater_route(); break;
 		case 9: skills(); break;
-		default: break;
+		default: left_repeater_route();
 	}
 }
 
@@ -117,7 +117,8 @@ void opcontrol() {
 
 		// auto lift
 		if(claw_closed && !was_claw_closed && target <= 0.25){
-			lift_pos(1);
+			do_lift_PID = true;
+			lift_pos(2);
 		}
 		was_claw_closed = claw_closed;
 
