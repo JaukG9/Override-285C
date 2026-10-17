@@ -90,15 +90,8 @@ void lift_pos(double height){
     target = std::clamp(height, 0.0, LIFT_MAX_HEIGHT);
 }
 
+// call every loop while the button is held: keeps the target a little ahead of the lift
 void lift_manual(bool up){
-    if(!do_lift_PID){
-        target = get_lift_height();
-    }
-
     double height = get_lift_height();
-    if(up){
-        lift_pos(std::min(target + 4.5, height + 9));
-    }else{
-        lift_pos(std::max(target - 3, height - 8));
-    }
+    lift_pos(up ? height + 4.5 : height - 3);
 }

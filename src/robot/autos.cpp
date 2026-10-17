@@ -187,13 +187,13 @@ void autonSelector(void*){
     Button* auton = nullptr;
     
     static Button leftAutons[] = {
-        Button(10, 10, 225, 105, "Repeater", pros::Color::peach_puff, pros::Color::black),
+        Button(10, 10, 225, 105, "Left Repeater", pros::Color::peach_puff, pros::Color::black),
         Button(245, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(10, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(245, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black)
     };
     static Button rightAutons[] = {
-        Button(10, 10, 225, 105, "Repeater", pros::Color::peach_puff, pros::Color::black),
+        Button(10, 10, 225, 105, "Right Repeater", pros::Color::peach_puff, pros::Color::black),
         Button(245, 10, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(10, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black),
         Button(245, 125, 225, 105, "", pros::Color::peach_puff, pros::Color::black)

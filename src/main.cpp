@@ -8,8 +8,9 @@
 #include "robot/auto-pid.h"
 
 /**
- * Runs initialization code. This occurs as soon as the program is started.
- *
+ * @brief initialization
+ * 
+ * Runs initialization code. This occurs as soon as the program is started. 
  * Initializes the brain, chassis, and pneumatics.
  */
 void initialize(){
@@ -24,6 +25,8 @@ void initialize(){
 }
 
 /**
+ * @brief disabled state
+ * 
  * Runs while the robot is in the disabled state of the Field Management System
  * or the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
@@ -31,18 +34,20 @@ void initialize(){
 void disabled(){}
 
 /**
+ * @brief init for competitions
+ * 
  * Runs after initialize(), and before autonomous when connected to the Field
  * Management System or the VEX Competition Switch. This is intended for
  * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * Runs the autonomous selector
+ * on the LCD. Runs the autonomous selector
  */
 void competition_initialize(){
 	pros::Task selector(autonSelector);
 }
 
 /**
+ * @brief run autons
+ * 
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the autonomous
@@ -56,32 +61,21 @@ void competition_initialize(){
 void autonomous(){
 	// erase screen for autonomous start
 	pros::screen::erase();
-
-	// // tune the drive PIDs, angular first since lateral uses it (REMOVE BEFORE COMP)
-	//auto_angular_PID();
-	//auto_lateral_PID();
-
-	// chassis.setPose(0,0,0);
-	// chassis.moveToPoint(0, 48, 5000);
-	// for(int i = 0; i < 50; i++){
-	// 	controller.print(0, 0, "%.3f, %.3f, %.3f", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
-	// 	pros::delay(50);
-	// }
-	
 	do_lift_PID = true;
-	left_repeater_route();
 
 	// run the selected autonomous routine
-	// switch(autonomousSelection){
-	// 	case 0: skip(); break;
-	// 	case 1: ; break;
-	// 	case 2: ; break;
-	// 	case 9: skills(); break;
-	// 	default: break;
-	// }
+	switch(autonomousSelection){
+		case 0: skip(); break;
+		case 1: left_repeater_route(); break;
+		case 2: right_repeater_route(); break;
+		case 9: skills(); break;
+		default: break;
+	}
 }
 
 /**
+ * @brief driver control
+ * 
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
@@ -95,12 +89,7 @@ void autonomous(){
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	// josticks --> driving
-	// right arrow --> run the intake & move lift and claw to set height and open claw + a sensor to see and pick up object
-	// L2 --> up, L1 --> down
-	// R2 hold to open
-	// A --> force override prevent tipping algo
-	bool intaking = false, manual_lifting = false;
+	bool manual_lifting = false, was_claw_closed = true;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
@@ -108,33 +97,29 @@ void opcontrol() {
 		// tank drive
 		tank();
 
-		// if(right_arrow){
-		// 	lift_pos(20);
-		// 	intaking = true;
-		// }
-		
-		if(intaking && std::abs(get_lift_height() - 20) < 0.5){
-			intaking = false;
-		}
-
-		if(L1 != L2 && !intaking){
-			do_lift_PID = false;
+		// run the lift
+		if(L1 != L2){
 			manual_lifting = true;
 			lift_manual(L2);
-		}else if(!intaking){
+		}else{
 			if(manual_lifting){
 				manual_lifting = false;
 				target = get_lift_height();
-				do_lift_PID = true;
 			}
-
 			if(!do_lift_PID){
 				lift.move_velocity(0);
 			}
 		}
 
-		claw.set_value(!(R2 || intaking));
-		claw_rotate.set_value(intaking);
+		// set claw
+		bool claw_closed = !R2;
+		claw.set_value(claw_closed);
+
+		// auto lift
+		if(claw_closed && !was_claw_closed && target <= 0.25){
+			lift_pos(1);
+		}
+		was_claw_closed = claw_closed;
 
 		pros::delay(20); // 20ms downtime
 	}

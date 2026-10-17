@@ -7,22 +7,18 @@
 
 extern pros::Imu imu;
 
-/* MOTION CHAINING
- * Chained motions don't stop at their target: they exit a little early while still moving, so
- * the next motion picks up without the robot stopping. How fast it's still going (minSpeed) and
- * how early it exits (earlyExitRange) come from the drive's top speed (from the drivetrain
- * settings) and the constants below, which are set for the override bot: 4 blue motors geared
- * 36:60 (360rpm) on 3.25" omnis. A 4 motor drive speeds up / slows down a lot slower than a 6
- * motor one, so it can't carry as much speed between motions.
- */
-// how fast the drive can slow down (in/s^2 and deg/s^2)
+/* CUSTOM MOTION CHAINING */
+// max deceleration (in/s^2 and deg/s^2)
 const float CHAIN_LATERAL_ACCEL = 150;
 const float CHAIN_ANGULAR_ACCEL = 1200;
-// how much of the fastest speed it could reach on a motion it keeps when handing off
+
+// max carry speed when chaining
 const float CHAIN_LATERAL_CARRY = 0.5;
 const float CHAIN_ANGULAR_CARRY = 0.25;
-// lemlib's moveToPoint stops steering once it's this close (inches) to the target
+
+// stop steering threshold
 const float LEMLIB_SETTLE_RANGE = 7.5;
+
 // how far off (degrees) a close point can be before chainToPoint turns to face it first
 const float CHAIN_FACE_TOLERANCE = 10;
 
@@ -45,48 +41,49 @@ struct ChainToHeadingParams{
 };
 
 class CustomChassis : public lemlib::Chassis{
-    // waits for the running motion to end so the pose is where the robot actually is. lemlib
-    // waits for it anyway before starting the next motion, but the chain values would've been
-    // worked out from where the robot was when the last motion started
+    /* PRIVATE FUNCTIONS */
+    // wait for motion to end
     void waitForMotion(){
         while(isInMotion()) pros::delay(5);
     }
 
-    // drive top speeds at full power, from the drivetrain settings
+    // top speeds for DT (angular & lateral)
     float lateralTopSpeed(){
-        return drivetrain.rpm / 60 * M_PI * drivetrain.wheelDiameter;  // in/s
+        return drivetrain.rpm / 60 * M_PI * drivetrain.wheelDiameter;
     }
     float angularTopSpeed(){
-        return lateralTopSpeed() * 2 / drivetrain.trackWidth * 180 / M_PI;  // deg/s
+        return lateralTopSpeed() * 2 / drivetrain.trackWidth * 180 / M_PI;
     }
 
     /**
-     * @brief works out how fast a chained motion should still be going when it hands off, and
-     * how early it should exit so it coasts the rest of the way to its target
+     * @brief finds minSpeed and earlyExitRange
      *
      * The speed it carries is a fraction of the fastest it could reach on a motion that long
      * (sqrt(2 * accel * distance)), and it exits as far early as it takes to slow down from that
-     * speed (speed^2 / (2 * accel)), so short motions carry less speed and exit less early.
+     * speed (speed^2 / (2 * accel)).
      */
-    void chainValues(float distance, float topSpeed, float maxSpeed, float accel, float carry,
-                     float& minSpeed, float& earlyExitRange){
+    void chainValues(float distance, float topSpeed, float maxSpeed, float accel, float carry, float& minSpeed, float& earlyExitRange){
         float reachable = std::min(std::sqrt(2 * accel * distance), topSpeed * maxSpeed / 127);
         float carrySpeed = reachable * carry;
         minSpeed = carrySpeed / topSpeed * 127;
         earlyExitRange = std::min(carrySpeed * carrySpeed / (2 * accel), distance / 2);
     }
 
+    /* PUBLIC FUNCTIONS */
     public:
     using lemlib::Chassis::Chassis;
 
+    /**
+     * @brief motion chaining to point
+     * 
+     * Input x, y, and timeout + any additional params to get auto motion chaining
+     */
     void chainToPoint(float x, float y, int timeout, ChainToPointParams params = {}, bool async = true){
         waitForMotion();
         lemlib::Pose start = getPose();
         float distance = std::hypot(x - start.x, y - start.y);
 
-        // lemlib stops steering once it's within 7.5in of the target, so a short move to a point that
-        // isn't straight ahead/behind would drive right past it. turn to face the point first (for
-        // really short moves, whichever end of the robot is closer, since lemlib drives either way then)
+        // turn then move to short distances
         if(distance < 2 * LEMLIB_SETTLE_RANGE && distance > 0.5){
             float bearing = std::atan2(x - start.x, y - start.y) * 180 / M_PI;
             if(distance < LEMLIB_SETTLE_RANGE){
@@ -104,8 +101,7 @@ class CustomChassis : public lemlib::Chassis{
 
         float minSpeed = 0, earlyExitRange = 0;
         if(params.chain){
-            chainValues(distance, lateralTopSpeed(), std::abs(params.maxSpeed), CHAIN_LATERAL_ACCEL,
-                        CHAIN_LATERAL_CARRY, minSpeed, earlyExitRange);
+            chainValues(distance, lateralTopSpeed(), std::abs(params.maxSpeed), CHAIN_LATERAL_ACCEL, CHAIN_LATERAL_CARRY, minSpeed, earlyExitRange);
         }
 
         moveToPoint(x, y, timeout,
@@ -116,6 +112,11 @@ class CustomChassis : public lemlib::Chassis{
                     async);
     }
 
+    /**
+     * @brief motion chaining to point
+     * 
+     * Input x, y, theta, and timeout + any additional params to get auto motion chaining
+     */
     void chainToPose(float x, float y, float theta, int timeout, ChainToPoseParams params = {}, bool async = true){
         waitForMotion();
         lemlib::Pose start = getPose();
@@ -123,8 +124,7 @@ class CustomChassis : public lemlib::Chassis{
 
         float minSpeed = 0, earlyExitRange = 0;
         if(params.chain){
-            chainValues(distance, lateralTopSpeed(), std::abs(params.maxSpeed), CHAIN_LATERAL_ACCEL,
-                        CHAIN_LATERAL_CARRY, minSpeed, earlyExitRange);
+            chainValues(distance, lateralTopSpeed(), std::abs(params.maxSpeed), CHAIN_LATERAL_ACCEL, CHAIN_LATERAL_CARRY, minSpeed, earlyExitRange);
         }
 
         moveToPose(x, y, theta, timeout,
@@ -137,6 +137,11 @@ class CustomChassis : public lemlib::Chassis{
                    async);
     }
 
+    /**
+     * @brief motion chaining to point
+     * 
+     * Input theta and timeout + any additional params to get auto motion chaining
+     */
     void chainToHeading(float theta, int timeout, ChainToHeadingParams params = {}, bool async = true){
         waitForMotion();
         float error = lemlib::angleError(theta, getPose().theta, false, params.direction);
@@ -144,8 +149,7 @@ class CustomChassis : public lemlib::Chassis{
 
         float minSpeed = 0, earlyExitRange = 0;
         if(params.chain){
-            chainValues(distance, angularTopSpeed(), std::abs(params.maxSpeed), CHAIN_ANGULAR_ACCEL,
-                        CHAIN_ANGULAR_CARRY, minSpeed, earlyExitRange);
+            chainValues(distance, angularTopSpeed(), std::abs(params.maxSpeed), CHAIN_ANGULAR_ACCEL, CHAIN_ANGULAR_CARRY, minSpeed, earlyExitRange);
         }
 
         turnToHeading(theta, timeout,
