@@ -13,16 +13,7 @@
  * Runs initialization code. This occurs as soon as the program is started. 
  * Initializes the brain, chassis, and pneumatics.
  */
-void initialize(){
-	pros::lcd::initialize();
-	// aivision_back.reset();
-	// aivision_side.reset();
-	chassis.calibrate();
-	rotation.reset_position();
-
-	claw.set_value(true);
-	pros::Task run_lift(lift_PID);
-}
+void initialize(){}
 
 /**
  * @brief disabled state
@@ -41,9 +32,7 @@ void disabled(){}
  * competition-specific initialization routines, such as an autonomous selector
  * on the LCD. Runs the autonomous selector
  */
-void competition_initialize(){
-	pros::Task selector(autonSelector);
-}
+void competition_initialize(){}
 
 /**
  * @brief run autons
@@ -58,55 +47,18 @@ void competition_initialize(){
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous(){
-	// erase screen for autonomous start
-	pros::screen::erase();
-	do_lift_PID = true;
-
-	// run the selected autonomous routine
-	switch(autonomousSelection){
-		case 0: skip(); break;
-		case 1: left_repeater_route(); break;
-		case 2: right_repeater_route(); break;
-		case 9: skills(); break;
-		default: left_repeater_route();
-	}
-}
+void autonomous(){}
 
 void opcontrol() {
-	bool manual_lifting = false, was_claw_closed = true;
-	pros::Task inputs(get_inputs);
-	do_lift_PID = false;
-
-	while (true) {
-		// tank drive
-		tank();
-
-		// run the lift
-		if(L1 != L2){
-			manual_lifting = true;
-			lift_manual(L2);
-		}else{
-			if(manual_lifting){
-				manual_lifting = false;
-				target = get_lift_height();
-			}
-			if(!do_lift_PID){
-				lift.move_velocity(0);
-			}
-		}
-
-		// set claw
-		bool claw_closed = !R2;
-		claw.set_value(claw_closed);
-
-		// auto lift
-		if(claw_closed && !was_claw_closed && target <= 0.25){
-			do_lift_PID = true;
-			lift_pos(2);
-		}
-		was_claw_closed = claw_closed;
-
-		pros::delay(20); // 20ms downtime
-	}
+	/**
+	 * Without using any external functions from the other files,
+	 * try to implement a simple opcontrol program that lets the
+	 * driver do the following
+	 * 	 a) make it run tank drive
+	 * 	 b) make it so that if you press the A button, the lift goes up
+	 *		and goes down if you press the B button
+	 *	 c) make it so that if you press R2, then it toggles the value
+	 *		of a piston --> it will close if you press it then open if
+	 *		you press it again, etc BUT NOT IF YOU'RE HOLDING IT
+	 */
 }
