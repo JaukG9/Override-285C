@@ -88,7 +88,7 @@ void autonomous(){
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
+void opcontrol(){
 	bool manual_lifting = false, was_claw_closed = true;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
