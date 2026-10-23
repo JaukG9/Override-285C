@@ -112,7 +112,6 @@ void lift_pos(double height){
     target = std::clamp(height, 0.0, LIFT_MAX_HEIGHT);
 }
 
-
 /**
  * @brief manually run lift
  * @param[in] up whether to lift up (true) or down (false)
@@ -124,4 +123,17 @@ void lift_manual(bool up){
     if(height < 5 && !up){
         lift.move_velocity(-60);
     }else{lift.move_velocity(up ? 125 : -120);}
+}
+
+/**
+ * @brief set claw
+ * 
+ * Open or close the claw
+ */
+void set_claw(bool closed){
+    if(closed){
+        claw.move_velocity(-200);
+    }else{
+        claw.move_velocity(200);
+    }
 }

@@ -20,7 +20,7 @@ void initialize(){
 	chassis.calibrate();
 	rotation.reset_position();
 
-	claw.set_value(true);
+	set_claw(true);
 	pros::Task run_lift(lift_PID);
 }
 
@@ -113,7 +113,7 @@ void opcontrol(){
 
 		// set claw
 		bool claw_closed = !R2;
-		claw.set_value(claw_closed);
+		set_claw(claw_closed);
 
 		// auto lift
 		if(claw_closed && !was_claw_closed && target <= 0.25){
