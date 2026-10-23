@@ -180,7 +180,62 @@ void right_repeater_route(){
     claw.set_value(false);
 }
 
+/**
+ * @brief 3 pins + toggle
+ * 
+ * Turn the toggle twice (to our color) then scores 3 pins and
+ * moves to matchloader.
+ */
+void left_3_rush(){
+    // toggle twice
+    chassis.setPose(-58, 0, 270);
+    chassis.moveToPoint(-82, 0, 1000);
+    chassis.moveToPoint(-58, 0, 1000, {.forwards = false});
+    chassis.moveToPoint(-82, 0, 1000);
 
+    // score the 1st pin
+    chassis.moveToPoint(-48, 0, 1000, {.forwards = false});
+    lift_pos(3);
+    chassis.turnToHeading(180, 750);
+    chassis.moveToPoint(-48, -28, 1000);
+    chassis.waitUntilDone();
+    lift_pos(0);
+    pros::delay(100);
+    claw.set_value(false);
+
+    // score the 2nd pin
+    chassis.moveToPoint(-48, 12, 750, {.forwards = false});
+    chassis.turnToHeading(120, 750);
+    chassis.moveToPoint(-32, -20, 800);
+    chassis.moveToPoint(-24, -24, 750, {.maxSpeed = 30});
+    pros::delay(200);
+    claw.set_value(true);
+    chassis.turnToHeading(270, 800);
+    lift_pos(10);
+    chassis.moveToPoint(-52, -24, 1000);
+    chassis.waitUntilDone();
+    lift_pos(3);
+    pros::delay(200);
+    claw.set_value(false);
+
+    // score the 3rd pin
+    chassis.moveToPoint(-36, -24, 1000, {.forwards = false});
+    chassis.turnToHeading(210, 750);
+    chassis.moveToPoint(-44, -40, 1000);
+    chassis.moveToPoint(-48, -48, 750, {.maxSpeed = 30});
+    pros::delay(200);
+    claw.set_value(true);
+    chassis.turnToHeading(0, 750);
+    lift_pos(18);
+    chassis.moveToPoint(-48, -24, 1000);
+    pros::delay(200);
+    claw.set_value(false);
+
+    // go to matchloader
+    chassis.moveToPoint(-48, -33, 700, {.forwards = false});
+    chassis.turnToHeading(215, 750);
+    chassis.moveToPoint(-60, -55, 1000);
+}
 
 /**
  * @brief displays auton selector so user can select autos from one program
