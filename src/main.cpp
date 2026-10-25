@@ -20,6 +20,7 @@ void initialize(){
 	chassis.calibrate();
 	rotation.reset_position();
 
+	claw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	set_claw(true);
 	pros::Task run_lift(lift_PID);
 }
