@@ -125,30 +125,15 @@ void lift_manual(bool up){
     }else{lift.move_velocity(up ? 125 : -120);}
 }
 
-bool claw_closed = false;
-
 /**
  * @brief set claw
  * 
  * Open or close the claw.
  */
 void set_claw(bool closed){
-    claw_closed = closed;
-}
-
-/**
- * @brief async set claw
- * 
- * Open or close the claw in the background.
- */
-void async_claw(void*){
-    while(true){
-        if(claw_closed){
-            claw.move_velocity(-200);
-        }else{
-            claw.move_velocity(200);
-        }
-        pros::delay(500);
-        claw.move_velocity(0);
+    if(closed){
+        claw.move_velocity(-200);
+    }else{
+        claw.move_velocity(100);
     }
 }
