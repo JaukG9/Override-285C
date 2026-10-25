@@ -128,16 +128,6 @@ void lift_manual(bool up){
 bool claw_closed = false;
 
 /**
- * @brief set claw
- * 
- * Open or close the claw.
- */
-void set_claw(bool closed){
-    claw_closed = closed;
-    pros::Task do_claw(async_claw);
-}
-
-/**
  * @brief async set claw
  * 
  * Open or close the claw in the background.
@@ -150,4 +140,14 @@ void async_claw(void*){
     }
     pros::delay(500);
     claw.brake();
+}
+
+/**
+ * @brief set claw
+ * 
+ * Open or close the claw.
+ */
+void set_claw(bool closed){
+    claw_closed = closed;
+    pros::Task do_claw(async_claw);
 }
