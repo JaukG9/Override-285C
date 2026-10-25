@@ -134,6 +134,7 @@ bool claw_closed = false;
  */
 void set_claw(bool closed){
     claw_closed = closed;
+    pros::Task do_claw(async_claw);
 }
 
 /**
