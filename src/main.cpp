@@ -95,7 +95,14 @@ void opcontrol(){
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
+	int count = 0;
+
 	while (true) {
+		if(count % 75 == 0){
+			target = 0 + (rand() % (24 - 0 + 1));
+		}
+		count++;
+
 		// tank drive
 		tank();
 
