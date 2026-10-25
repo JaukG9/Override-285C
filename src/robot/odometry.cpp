@@ -78,7 +78,7 @@ double lift_deg_to_height(double deg){
 }
 
 int lift_motor_dir = 1;
-double target = 24;
+double target = 0.0;
 bool do_lift_PID = true;
 
 // PID constants (in mV)

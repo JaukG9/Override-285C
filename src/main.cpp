@@ -94,16 +94,8 @@ void opcontrol(){
 	bool manual_lifting = false, was_claw_closed = true;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
-
-	int count = 0;
-
+	
 	while (true) {
-		do_lift_PID = true;
-		if(count % 75 == 0){
-			target = 0 + (rand() % (24 - 0 + 1));
-		}
-		count++;
-
 		// tank drive
 		tank();
 
@@ -134,7 +126,6 @@ void opcontrol(){
 		}
 		was_claw_closed = claw_closed;
 
-		do_lift_PID = true;
 		pros::delay(20); // 20ms downtime
 	}
 }
