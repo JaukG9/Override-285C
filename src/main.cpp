@@ -114,7 +114,9 @@ void opcontrol(){
 
 		// set claw
 		bool claw_closed = !R2;
-		set_claw(claw_closed);
+		if(claw_closed != was_claw_closed){
+			set_claw(claw_closed);
+		}
 
 		// auto lift
 		if(claw_closed && !was_claw_closed && target <= 0.25){

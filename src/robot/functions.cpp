@@ -134,6 +134,8 @@ void set_claw(bool closed){
     if(closed){
         claw.move_velocity(-200);
     }else{
-        claw.move_velocity(100);
+        claw.move_velocity(200);
     }
+    pros::delay(1000);
+    claw.brake();
 }
