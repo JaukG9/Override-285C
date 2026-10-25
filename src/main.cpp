@@ -100,8 +100,8 @@ void opcontrol(){
 	while (true) {
 		if(count % 2 == 0){
 			controller.rumble(". - . -");
-			count++;
 		}
+		count++;
 
 		// tank drive
 		tank();
