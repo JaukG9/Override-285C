@@ -138,7 +138,7 @@ void async_claw(void*){
     }else{
         claw.move_velocity(200);
     }
-    pros::delay(500);
+    pros::delay(2000);
     claw.brake();
 }
 
