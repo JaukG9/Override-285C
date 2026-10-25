@@ -36,7 +36,7 @@ pros::MotorGroup lift({11, -18}, pros::MotorGearset::green);        // lift moto
 // pros::MotorGroup toggles({-1, 2}, pros::MotorGearset::green);       // toggle motors
 // pros::Motor intake(15, pros::MotorGearset::blue);                   // intake motor
 
-pros::Motor claw(1, pros::MotorGearset::green);
+pros::Motor claw(-1, pros::MotorGearset::green);
 
 /* init pistons */
 pros::adi::DigitalOut claw_rotate('B');
