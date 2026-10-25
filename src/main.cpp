@@ -95,7 +95,14 @@ void opcontrol(){
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
+	int count = 0;
+
 	while (true) {
+		if(count % 2 == 0){
+			controller.rumble(". - . -");
+			count++;
+		}
+
 		// tank drive
 		tank();
 
