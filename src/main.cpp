@@ -22,6 +22,7 @@ void initialize(){
 
 	claw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	set_claw(true);
+	pros::Task run_claw(async_claw);
 	pros::Task run_lift(lift_PID);
 }
 
