@@ -125,16 +125,3 @@ void lift_manual(bool up){
         lift.move_velocity(-60);
     }else{lift.move_velocity(up ? 125 : -120);}
 }
-
-/**
- * @brief set claw
- * 
- * Open or close the claw.
- */
-void set_claw(bool closed){
-    if(closed){
-        claw.move_velocity(-200);
-    }else{
-        claw.move_velocity(200);
-    }
-}

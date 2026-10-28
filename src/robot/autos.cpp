@@ -27,7 +27,7 @@ void skills(){
     chassis.turnToHeading(0, 600);
     chassis.moveToPoint(48, -26, 1200);
     chassis.waitUntilDone();
-    set_claw(false);
+    claw.set_value(false);
     pros::delay(250);
 
     // other loops
@@ -37,7 +37,7 @@ void skills(){
         chassis.moveToPoint(64, -56, 1000);
         lift_pos(0);
         chassis.waitUntilDone();
-        set_claw(true);
+        claw.set_value(true);
         pros::delay(150);
         lift.brake();
 
@@ -53,7 +53,7 @@ void skills(){
         chassis.waitUntilDone();
         lift_pos(4 + 8 * i);
         pros::delay(200);
-        set_claw(false);
+        claw.set_value(false);
     }
 }
 
@@ -70,7 +70,7 @@ void left_repeater_route(){
     chassis.turnToHeading(0, 600);
     chassis.moveToPoint(48, -26, 1200);
     chassis.waitUntilDone();
-    set_claw(false);
+    claw.set_value(false);
     pros::delay(250);
 
     // 2nd loop
@@ -79,7 +79,7 @@ void left_repeater_route(){
     chassis.moveToPoint(64, -56, 1000);
     lift_pos(0);
     chassis.waitUntilDone();
-    set_claw(true);
+    claw.set_value(true);
     pros::delay(150);
     lift.brake();
 
@@ -95,7 +95,7 @@ void left_repeater_route(){
     chassis.waitUntilDone();
     lift_pos(3);
     pros::delay(100);
-    set_claw(false);
+    claw.set_value(false);
 
     // 3rd loop
     chassis.moveToPoint(48, -56, 1500, {.forwards = false});
@@ -103,7 +103,7 @@ void left_repeater_route(){
     chassis.turnToHeading(90, 800);
     chassis.moveToPoint(64, -56, 1200);
     chassis.waitUntilDone();
-    set_claw(true);
+    claw.set_value(true);
     pros::delay(200);
     lift.brake();
 
@@ -116,7 +116,7 @@ void left_repeater_route(){
     chassis.moveToPoint(48, -26, 900);
     chassis.waitUntilDone();
     pros::delay(100);
-    set_claw(false);
+    claw.set_value(false);
 }
 
 /**
@@ -131,7 +131,7 @@ void right_repeater_route(){
     chassis.turnToHeading(180, 600);
     chassis.moveToPoint(48, 26, 1200);
     chassis.waitUntilDone();
-    set_claw(false);
+    claw.set_value(false);
     pros::delay(250);
 
     // 2nd loop
@@ -140,7 +140,7 @@ void right_repeater_route(){
     chassis.moveToPoint(64, 56, 900);
     lift_pos(0);
     chassis.waitUntilDone();
-    set_claw(true);
+    claw.set_value(true);
     pros::delay(150);
     lift.brake();
 
@@ -156,7 +156,7 @@ void right_repeater_route(){
     chassis.waitUntilDone();
     lift_pos(3);
     pros::delay(100);
-    set_claw(false);
+    claw.set_value(false);
 
     // 3rd loop
     chassis.moveToPoint(48, 56, 1500, {.forwards = false});
@@ -164,7 +164,7 @@ void right_repeater_route(){
     chassis.turnToHeading(90, 800);
     chassis.moveToPoint(64, 56, 1200);
     chassis.waitUntilDone();
-    set_claw(true);
+    claw.set_value(true);
     pros::delay(200);
     lift.brake();
 
@@ -177,7 +177,7 @@ void right_repeater_route(){
     chassis.moveToPoint(48, 26, 900);
     chassis.waitUntilDone();
     pros::delay(200);
-    set_claw(false);
+    claw.set_value(false);
 }
 
 /**
@@ -201,7 +201,7 @@ void left_3_rush(){
     chassis.waitUntilDone();
     lift_pos(0);
     pros::delay(100);
-    set_claw(false);
+    claw.set_value(false);
 
     // score the 2nd pin
     chassis.moveToPoint(-48, 12, 750, {.forwards = false});
@@ -209,14 +209,14 @@ void left_3_rush(){
     chassis.moveToPoint(-32, -20, 800);
     chassis.moveToPoint(-24, -24, 750, {.maxSpeed = 30});
     pros::delay(200);
-    set_claw(true);
+    claw.set_value(true);
     chassis.turnToHeading(270, 800);
     lift_pos(10);
     chassis.moveToPoint(-52, -24, 1000);
     chassis.waitUntilDone();
     lift_pos(3);
     pros::delay(200);
-    set_claw(false);
+    claw.set_value(false);
 
     // score the 3rd pin
     chassis.moveToPoint(-36, -24, 1000, {.forwards = false});
@@ -224,12 +224,12 @@ void left_3_rush(){
     chassis.moveToPoint(-44, -40, 1000);
     chassis.moveToPoint(-48, -48, 750, {.maxSpeed = 30});
     pros::delay(200);
-    set_claw(true);
+    claw.set_value(true);
     chassis.turnToHeading(0, 750);
     lift_pos(18);
     chassis.moveToPoint(-48, -24, 1000);
     pros::delay(200);
-    set_claw(false);
+    claw.set_value(false);
 
     // go to matchloader
     chassis.moveToPoint(-48, -33, 700, {.forwards = false});

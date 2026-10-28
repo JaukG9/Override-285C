@@ -20,9 +20,7 @@ void initialize(){
 	chassis.calibrate();
 	rotation.reset_position();
 
-	claw.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	set_claw(true);
-
+	claw.set_value(true);
 	pros::Task run_lift(lift_PID);
 }
 
@@ -94,7 +92,7 @@ void opcontrol(){
 	bool manual_lifting = false, was_claw_closed = true;
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
-	
+
 	while (true) {
 		// tank drive
 		tank();
@@ -115,9 +113,7 @@ void opcontrol(){
 
 		// set claw
 		bool claw_closed = !R2;
-		if(claw_closed != was_claw_closed){
-			set_claw(claw_closed);
-		}
+		claw.set_value(claw_closed);
 
 		// auto lift
 		if(claw_closed && !was_claw_closed && target <= 0.25){

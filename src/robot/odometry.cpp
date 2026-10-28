@@ -85,7 +85,7 @@ bool do_lift_PID = true;
 const double kP = 3000.0;   // mV per inch of error
 const double kI = 5000.0;   // mV per inch * second of leftover error within 1 in.
 const double kD = 100.0;    // mV per in/s of lift speed
-const double kG = 750.0;    // constant mV to oppose gravity
+const double kG = 150.0;    // constant mV to oppose gravity
 const double kS = 400.0;    // address friction issues
 
 /**

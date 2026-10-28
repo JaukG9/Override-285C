@@ -12,8 +12,8 @@ extern pros::MotorGroup right_mg;
 extern pros::MotorGroup lift;
 extern pros::Motor intake;
 extern pros::MotorGroup toggles;
-extern pros::Motor claw;
 
+extern pros::adi::DigitalOut claw;
 extern pros::adi::DigitalOut claw_rotate;
 extern pros::adi::DigitalOut two_bar;
 extern pros::adi::DigitalOut brake_1;
