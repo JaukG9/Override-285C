@@ -119,21 +119,9 @@ void lift_pos(double height){
  * Sets the PID target to a value up or down of the current one, to move manually.
  */
 void lift_manual(bool up){
+    do_lift_PID = false;
     double height = get_lift_height();
     if(height < 5 && !up){
         lift.move_velocity(-60);
     }else{lift.move_velocity(up ? 125 : -120);}
-}
-
-/**
- * @brief set claw
- * 
- * Open or close the claw.
- */
-void set_claw(bool closed){
-    if(closed){
-        claw.move_velocity(-200);
-    }else{
-        claw.move_velocity(200);
-    }
 }

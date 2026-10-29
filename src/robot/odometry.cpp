@@ -61,8 +61,8 @@ CustomChassis chassis(drivetrain, // drivetrain settings
 
 /* ODOMETRY FOR THE LIFT */
 // table of degrees and inches
-const double LIFT_CAL_DEG[] = {0, 82, 154, 180, 230, 262, 308, 381, 440, 669};
-const double LIFT_CAL_IN[]  = {0, 3, 6.5, 8, 11, 13, 16, 20, 23.5, 24.75};
+const double LIFT_CAL_DEG[] = {0, 80, 114, 154, 178, 206, 245, 274, 282, 330, 377, 435, 490, 552};
+const double LIFT_CAL_IN[]  = {0, 3, 7, 10, 11.5, 13.5, 16, 18.5, 19, 22, 25, 28, 30.5, 32.4};
 const int LIFT_CAL_POINTS = sizeof(LIFT_CAL_DEG) / sizeof(LIFT_CAL_DEG[0]);
 
 const double LIFT_MAX_HEIGHT = LIFT_CAL_IN[LIFT_CAL_POINTS - 1];
@@ -84,7 +84,7 @@ bool do_lift_PID = true;
 // PID constants (in mV)
 const double kP = 3000.0;   // mV per inch of error
 const double kI = 5000.0;   // mV per inch * second of leftover error within 1 in.
-const double kD = 150.0;    // mV per in/s of lift speed
+const double kD = 100.0;    // mV per in/s of lift speed
 const double kG = 150.0;    // constant mV to oppose gravity
 const double kS = 400.0;    // address friction issues
 

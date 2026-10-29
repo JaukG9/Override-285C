@@ -41,7 +41,6 @@ struct ChainToHeadingParams{
 };
 
 class CustomChassis : public lemlib::Chassis{
-    /* PRIVATE FUNCTIONS */
     // wait for motion to end
     void waitForMotion(){
         while(isInMotion()) pros::delay(5);
@@ -55,13 +54,7 @@ class CustomChassis : public lemlib::Chassis{
         return lateralTopSpeed() * 2 / drivetrain.trackWidth * 180 / M_PI;
     }
 
-    /**
-     * @brief finds minSpeed and earlyExitRange
-     *
-     * The speed it carries is a fraction of the fastest it could reach on a motion that long
-     * (sqrt(2 * accel * distance)), and it exits as far early as it takes to slow down from that
-     * speed (speed^2 / (2 * accel)).
-     */
+    // find minSpeed and earlyExitRange
     void chainValues(float distance, float topSpeed, float maxSpeed, float accel, float carry, float& minSpeed, float& earlyExitRange){
         float reachable = std::min(std::sqrt(2 * accel * distance), topSpeed * maxSpeed / 127);
         float carrySpeed = reachable * carry;
@@ -69,7 +62,6 @@ class CustomChassis : public lemlib::Chassis{
         earlyExitRange = std::min(carrySpeed * carrySpeed / (2 * accel), distance / 2);
     }
 
-    /* PUBLIC FUNCTIONS */
     public:
     using lemlib::Chassis::Chassis;
 
