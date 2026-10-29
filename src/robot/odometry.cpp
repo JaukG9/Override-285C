@@ -7,7 +7,7 @@
 #include "robot/functions.h"
 
 /* ODOMETRY FOR THE DRIVETRAIN */
-pros::Imu imu(9);
+pros::Imu imu(8);
 // pros::Rotation horizontal_sensor(4);
 // lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_sensor, lemlib::Omniwheel::NEW_2, 1);
 
@@ -33,9 +33,9 @@ lemlib::ControllerSettings lateral_controller(6.5, // proportional gain (kP)
 );
 
 // angular PID controller
-lemlib::ControllerSettings angular_controller(2.75, // proportional gain (kP)
+lemlib::ControllerSettings angular_controller(2.762, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              14.9, // derivative gain (kD)
+                                              14.852, // derivative gain (kD)
                                               0, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds

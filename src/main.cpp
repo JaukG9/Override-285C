@@ -69,7 +69,7 @@ void autonomous(){
 		case 1: left_repeater_route(); break;
 		case 2: right_repeater_route(); break;
 		case 9: skills(); break;
-		default: left_repeater_route();
+		default: ;
 	}
 }
 

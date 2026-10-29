@@ -32,7 +32,7 @@ pros::Controller partner(pros::E_CONTROLLER_PARTNER);
 pros::MotorGroup left_mg({16, 17}, pros::MotorGearset::blue);       // left DT motors
 pros::MotorGroup right_mg({-19, -20}, pros::MotorGearset::blue);    // right DT motors
 
-pros::MotorGroup lift({11, -18}, pros::MotorGearset::green);        // lift motors
+pros::MotorGroup lift({11, -2}, pros::MotorGearset::green);        // lift motors
 // pros::MotorGroup toggles({-1, 2}, pros::MotorGearset::green);       // toggle motors
 // pros::Motor intake(15, pros::MotorGearset::blue);                   // intake motor
 
