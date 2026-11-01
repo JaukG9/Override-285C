@@ -66,10 +66,10 @@ void autonomous(){
 	// run the selected autonomous routine
 	switch(autonomousSelection){
 		case 0: skip(); break;
-		case 1: left_repeater_route(); break;
-		case 2: right_repeater_route(); break;
+		case 1: left_3_rush(); break;
+		case 2: right_3_rush(); break;
 		case 9: skills(); break;
-		default: ;
+		default: left_3_rush();
 	}
 }
 
@@ -118,7 +118,7 @@ void opcontrol(){
 		// auto lift
 		if(claw_closed && !was_claw_closed && target <= 0.25){
 			do_lift_PID = true;
-			lift_pos(2);
+			lift_pos(1.5);
 		}
 		was_claw_closed = claw_closed;
 
