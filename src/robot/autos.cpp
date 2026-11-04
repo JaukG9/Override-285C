@@ -17,7 +17,7 @@ void skip(){
 /**
  * @brief runs the programming skills autonomous.
  *
- * 
+ * Simple Override Skills Route
  */
 void skills(){
     // toggle twice
@@ -190,7 +190,7 @@ void right_repeater_route(){
  * Turn the toggle twice (to our color) then scores 3 pins and
  * moves to matchloader.
  */
-void left_3_rush(){
+void close_3_rush(){
     // toggle twice
     chassis.setPose(-61, 3, 270);
     lift_pos(30);
@@ -256,7 +256,7 @@ void left_3_rush(){
  * Turn the toggle twice (to our color) then scores 3 pins and
  * moves to matchloader.
  */
-void right_3_rush(){
+void far_3_rush(){
     // toggle twice
     chassis.setPose(-61, -3, 270);
     lift_pos(25);
@@ -312,6 +312,62 @@ void right_3_rush(){
     chassis.turnToHeading(325, 750);
     chassis.moveToPoint(-60, 55, 1000);
 }
+
+/**
+ * @brief 2 pins on 2 goals from wall
+ * 
+ * Score preload and the two wall pins (one per alliance side goal).
+ */
+void far_wall_4(){
+    // activate flipouts and toggle twice
+    chassis.setPose(0, -66, 180);
+    lift_pos(30);
+    chassis.moveToPoint(0, -56, 700, {.forwards = false});
+    lift_pos(17);
+    chassis.moveToPoint(0, -76, 700);
+    lift_pos(10);
+    chassis.moveToPoint(0, -56, 700, {.forwards = false});
+    lift_pos(5);
+    chassis.moveToPoint(0, -76, 700);
+    lift_pos(2);
+
+    // score the preload
+    chassis.moveToPoint(0, -48, 1000, {.forwards = false});
+    chassis.turnToHeading(270, 750);
+    chassis.moveToPoint(-22, -48, 1000);
+    chassis.waitUntilDone();
+    lift_pos(0);
+    pros::delay(200);
+    claw.set_value(false);
+
+    // pick up and score the right wall pin
+    chassis.moveToPose(0, -56, 310, 1000, {.forwards = false});
+    chassis.turnToHeading(110, 800);
+    chassis.moveToPose(21, -64, 150, 1000);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    chassis.turnToHeading(0, 800);
+    lift_pos(12);
+    chassis.moveToPoint(24, -50, 1000);
+    chassis.waitUntilDone();
+    lift_pos(8);
+    pros::delay(200);
+    claw.set_value(false);
+
+    // pick up and score the left wall pin
+    chassis.moveToPose(0, -56, 90, 1000, {.forwards = false});
+    chassis.turnToHeading(250, 800);
+    chassis.moveToPose(-21, -64, 210, 1000);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    chassis.turnToHeading(0, 800);
+    lift_pos(10);
+    chassis.moveToPoint(-24, -50, 1000);
+    chassis.waitUntilDone();
+    lift_pos(6);
+    pros::delay(200);
+    claw.set_value(false);
+};
 
 /**
  * @brief displays auton selector so user can select autos from one program
