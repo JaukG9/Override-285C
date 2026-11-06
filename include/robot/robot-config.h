@@ -21,6 +21,5 @@ extern pros::adi::DigitalOut brake_2;
 extern pros::adi::DigitalOut toggle_1;
 extern pros::adi::DigitalOut toggle_2;
 
-extern pros::AIVision aivision_back;
-extern pros::AIVision aivision_side;
+extern pros::Distance distance_sensor;
 extern pros::Rotation rotation;
