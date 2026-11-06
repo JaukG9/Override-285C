@@ -46,8 +46,7 @@ pros::adi::DigitalOut toggle_1('F');
 pros::adi::DigitalOut toggle_2('G');
 
 /* init sensors */
-pros::AIVision aivision_back(3);
-pros::AIVision aivision_side(8);
-pros::Rotation rotation(4);
+pros::Distance distance_sensor(4);
+pros::Rotation rotation(5);
 
 /* global variables */

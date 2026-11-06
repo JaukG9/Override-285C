@@ -33,6 +33,17 @@ void get_inputs(void*){
     }
 }
 
+std::int32_t distance, confidence;
+void dsr(void*){
+    while(true){
+        distance = distance_sensor.get();
+        confidence = distance_sensor.get_confidence();
+
+        controller.print(0, 0, "%ld, %ld", distance, confidence);
+        pros::delay(20);
+    }
+}
+
 /**
  * @brief translates controller input to drivetrain movements
  *

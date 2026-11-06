@@ -22,6 +22,7 @@ void initialize(){
 
 	claw.set_value(true);
 	pros::Task run_lift(lift_PID);
+	pros::Task get_dist(dsr);
 }
 
 /**
@@ -66,10 +67,10 @@ void autonomous(){
 	// run the selected autonomous routine
 	switch(autonomousSelection){
 		case 0: skip(); break;
-		case 1: left_3_rush(); break;
-		case 2: right_3_rush(); break;
+		case 1: close_3_rush(); break;
+		case 2: far_3_rush(); break;
 		case 9: skills(); break;
-		default: left_3_rush();
+		default: far_3_rush();
 	}
 }
 

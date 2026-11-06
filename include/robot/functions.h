@@ -14,3 +14,7 @@ void lift_manual(bool up);
 
 extern bool right_arrow, L1, L2, R2, A;
 void get_inputs(void*);
+
+extern std::int32_t distance;
+extern std::int32_t confidence;
+void dsr(void*);
