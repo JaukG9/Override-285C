@@ -41,15 +41,13 @@ void skills(){
     chassis.moveToPoint(-56, 0, 700, {.forwards = false});
     lift_pos(5);
     chassis.moveToPoint(-76, 0, 700);
-    lift_pos(2);
 
     // score the 1st pin
     chassis.moveToPoint(-48, 0, 1000, {.forwards = false});
-    lift_pos(2);
     chassis.turnToHeading(180, 750);
     chassis.moveToPoint(-48, -20, 1000);
     chassis.waitUntilDone();
-    lift_pos(0);
+    lift_pos(2);
     pros::delay(120);
     claw.set_value(false);
 
@@ -57,8 +55,13 @@ void skills(){
     chassis.moveToPoint(-48, -12, 1000, {.forwards = false});
     chassis.turnToHeading(120, 750);
     chassis.moveToPoint(-29.25, -20, 1000);
-    chassis.moveToPoint(-25.6, -22, 1000, {.maxSpeed = 35});
-    pros::delay(500);
+    chassis.moveToPoint(-24, -24, 1000, {.maxSpeed = 60});
+    count = 0;
+    while(distance > 60 && count <= 100){
+        count++;
+        pros::delay(10);
+    }
+    count = 0;
     claw.set_value(true);
     chassis.turnToHeading(270, 800);
     lift_pos(10);
@@ -70,11 +73,16 @@ void skills(){
 
     // score the 3rd pin
     chassis.moveToPoint(-36, -24, 1000, {.forwards = false});
-    chassis.turnToHeading(120, 800);
+    chassis.turnToHeading(210, 800);
     lift_pos(0);
     chassis.moveToPoint(-44.2, -41.7, 1000);
-    chassis.moveToPoint(-45.6, -44.8, 1000, {.maxSpeed = 35});
-    pros::delay(500);
+    chassis.moveToPoint(-48, -48, 1000, {.maxSpeed = 65});
+    count = 0;
+    while(distance > 60 && count <= 100){
+        count++;
+        pros::delay(10);
+    }
+    count = 0;
     claw.set_value(true);
     chassis.turnToHeading(0, 800);
     lift_pos(17);
@@ -115,6 +123,56 @@ void skills(){
     lift_pos(25);
     pros::delay(200);
     claw.set_value(false);
+
+    // matchload and score other goal [1]
+    chassis.moveToPoint(-48, -60, 1200, {.forwards = false});
+    chassis.turnToHeading(270, 800);
+    lift_pos(0);
+    chassis.moveToPoint(-66, -60, 1000);
+    chassis.waitUntilDone();
+    claw.set_value(true);
+    chassis.chainToPoint(-60, -54, 800, {.forwards = false});
+    chassis.chainToHeading(0, 800);
+    chassis.moveToPoint(-40, -48, 1000);
+    lift_pos(5);
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(-26, -48, 750);
+    chassis.waitUntilDone();
+    lift_pos(2);
+    pros::delay(200);
+    claw.set_value(false);
+
+    // matchload and score other goal [2-5]
+    for(int i = 2; i <= 5; i++){
+        chassis.moveToPose(-48, -60, 45, 1000);
+        chassis.turnToHeading(270, 800);
+        lift_pos(0);
+        chassis.moveToPoint(-66, -60, 1000);
+        chassis.waitUntilDone();
+        claw.set_value(true);
+        chassis.chainToPoint(-60, -54, 800, {.forwards = false});
+        chassis.chainToHeading(0, 800);
+        chassis.moveToPoint(-40, -48, 1000);
+        lift_pos(6 * i);
+        chassis.turnToHeading(90, 800);
+        chassis.moveToPoint(-26, -48, 750);
+        chassis.waitUntilDone();
+        lift_pos(6 * i - 2);
+        pros::delay(200);
+        claw.set_value(false);
+    }
+
+    // toggle other toggle and park
+    chassis.moveToPose(-48, -60, 45, 1000);
+    chassis.turnToHeading(90, 800);
+    chassis.moveToPoint(0, -60, 1500);
+    chassis.turnToHeading(180, 800);
+    chassis.setPose(-66, 0, 270);
+    chassis.moveToPoint(-56, 0, 700, {.forwards = false});
+    chassis.moveToPoint(-76, 0, 700);
+    chassis.moveToPoint(-56, 0, 700, {.forwards = false});
+    chassis.moveToPoint(-76, 0, 700);
+    chassis.moveToPoint(-8, 0, 3000, {.forwards = false});
 }
 
 /**
