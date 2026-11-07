@@ -383,7 +383,7 @@ void far_3_rush(){
     chassis.chainToPoint(0, -66, 700);
 
     // score the preload
-    chassis.moveToPoint(0, -48, 750, {.forwards = false});
+    chassis.chainToPoint(0, -48, 750, {.forwards = false, .chain = false});
     chassis.turnToHeading(270, 750);
     chassis.moveToPoint(-22, -48, 750);
     chassis.waitUntilDone();

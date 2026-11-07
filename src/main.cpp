@@ -94,6 +94,9 @@ void opcontrol(){
 	pros::Task inputs(get_inputs);
 	do_lift_PID = false;
 
+	// motion chaining tuner (set RUN_CHAIN_TUNER in robot/chain.h). never runs on a field
+	if(RUN_CHAIN_TUNER && !pros::competition::is_connected()) tune_chain();
+
 	while (true) {
 		// tank drive
 		tank();
