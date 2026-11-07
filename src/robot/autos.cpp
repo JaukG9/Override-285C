@@ -4,6 +4,8 @@
 #include "robot/functions.h"
 #include "robot/autos.h"
 
+int count = 0;
+
 /**
  * @brief runs the skip autonomous.
  *
@@ -311,53 +313,64 @@ void close_3_rush(){
  * moves to matchloader.
  */
 void far_3_rush(){
-    // toggle twice
-    chassis.setPose(-61, -3, 270);
-    lift_pos(25);
-    chassis.moveToPoint(-54, -3, 700, {.forwards = false});
-    chassis.moveToPoint(-72, -3, 700);
+    // activate flipouts and toggle twice
+    chassis.setPose(0, -60, 180);
+    lift_pos(30);
+    chassis.moveToPoint(0, -54, 700, {.forwards = false});
     lift_pos(17);
-    chassis.moveToPoint(-54, -3, 700, {.forwards = false});
+    chassis.chainToPoint(0, -66, 700);
     lift_pos(10);
-    chassis.moveToPoint(-72, -3, 700);
+    chassis.chainToPoint(0, -54, 700, {.forwards = false});
     lift_pos(5);
+    chassis.chainToPoint(0, -66, 700);
 
-    // score the 1st pin
-    chassis.moveToPoint(-48, -3, 1000, {.forwards = false});
-    lift_pos(2);
-    chassis.turnToHeading(0, 750);
-    chassis.moveToPoint(-48, 28, 1000);
+    // score the preload
+    chassis.moveToPoint(0, -48, 750, {.forwards = false});
+    chassis.turnToHeading(270, 750);
+    chassis.moveToPoint(-22, -48, 750);
     chassis.waitUntilDone();
-    lift_pos(0);
-    pros::delay(120);
+    lift_pos(2);
+    pros::delay(500);
     claw.set_value(false);
 
     // score the 2nd pin
-    chassis.moveToPoint(-48, -2, 750, {.forwards = false});
-    chassis.turnToHeading(45, 750);
-    chassis.moveToPoint(-30.5, 19, 1000);
-    chassis.moveToPoint(-21, 28.5, 900, {.maxSpeed = 35});
-    pros::delay(500);
+    chassis.moveToPoint(0, -48, 750, {.forwards = false});
+    chassis.turnToHeading(309, 750);
+    chassis.moveToPoint(-20, -33, 600);
+    count = 0;
+    chassis.moveToPoint(-29, -26, 800, {.maxSpeed = 60});
+    while(distance > 60 && count <= 150){
+        count++;
+        pros::delay(10);
+    }
+    count = 0;
     claw.set_value(true);
-    chassis.turnToHeading(270, 800);
-    lift_pos(10);
-    chassis.moveToPoint(-48, 27.5, 1000);
+    chassis.turnToHeading(180, 800);
+    lift_pos(14);
+    chassis.moveToPoint(-24, -48, 1000);
     chassis.waitUntilDone();
     lift_pos(3);
     pros::delay(200);
     claw.set_value(false);
 
     // score the 3rd pin
-    chassis.moveToPoint(-26, 26, 1000, {.forwards = false});
+    chassis.moveToPoint(-24, -24, 800, {.forwards = false});
     lift_pos(0);
-    chassis.turnToHeading(315, 750);
-    chassis.moveToPoint(-44.5, 45.5, 1000);
-    chassis.moveToPoint(-55, 56, 750, {.maxSpeed = 30});
-    pros::delay(400);
+    chassis.turnToHeading(225, 750);
+    chassis.moveToPoint(-50, -50, 1000, {.maxSpeed = 80});
+    count = 0;
+    pros::delay(350);
+    while(count <= 3){
+        if(distance <= 65){
+            count++;
+        }
+        pros::delay(10);
+    }
+    count = 0;
     claw.set_value(true);
-    chassis.turnToHeading(180, 750);
+    chassis.turnToHeading(90, 750);
     lift_pos(18);
-    chassis.moveToPoint(-50, 24, 1000);
+    chassis.moveToPoint(-24, -48, 1000);
     pros::delay(200);
     claw.set_value(false);
 
@@ -374,44 +387,46 @@ void far_3_rush(){
  */
 void far_wall_4(){
     // activate flipouts and toggle twice
-    chassis.setPose(0, -66, 180);
+    chassis.setPose(0, -60, 180);
     lift_pos(30);
-    chassis.moveToPoint(0, -56, 700, {.forwards = false});
+    chassis.moveToPoint(0, -54, 700, {.forwards = false});
     lift_pos(17);
-    chassis.moveToPoint(0, -76, 700);
+    chassis.moveToPoint(0, -66, 700);
     lift_pos(10);
-    chassis.moveToPoint(0, -56, 700, {.forwards = false});
+    chassis.moveToPoint(0, -54, 700, {.forwards = false});
     lift_pos(5);
-    chassis.moveToPoint(0, -76, 700);
-    lift_pos(2);
+    chassis.moveToPoint(0, -66, 700);
 
     // score the preload
     chassis.moveToPoint(0, -48, 1000, {.forwards = false});
     chassis.turnToHeading(270, 750);
     chassis.moveToPoint(-22, -48, 1000);
     chassis.waitUntilDone();
-    lift_pos(0);
-    pros::delay(200);
+    lift_pos(2);
+    pros::delay(500);
     claw.set_value(false);
 
     // pick up and score the right wall pin
-    chassis.moveToPose(0, -56, 310, 1000, {.forwards = false});
+    chassis.moveToPoint(-10, -48, 800, {.forwards = false});
+    chassis.moveToPose(10, -56, 310, 1000, {.forwards = false});
+    lift_pos(0);
     chassis.turnToHeading(110, 800);
-    chassis.moveToPose(21, -64, 150, 1000);
+    chassis.moveToPoint(21, -68, 2000);
     chassis.waitUntilDone();
     claw.set_value(true);
-    chassis.turnToHeading(0, 800);
-    lift_pos(12);
-    chassis.moveToPoint(24, -50, 1000);
+    chassis.turnToHeading(115, 750);
+    chassis.moveToPoint(5, -48, 1500, {.forwards = false});
+    lift_pos(15);
+    chassis.moveToPoint(24, -48, 1000);
     chassis.waitUntilDone();
-    lift_pos(8);
+    lift_pos(10);
     pros::delay(200);
     claw.set_value(false);
 
     // pick up and score the left wall pin
-    chassis.moveToPose(0, -56, 90, 1000, {.forwards = false});
+    chassis.moveToPose(-0, -56, 90, 1000, {.forwards = false});
     chassis.turnToHeading(250, 800);
-    chassis.moveToPose(-21, -64, 210, 1000);
+    chassis.moveToPoint(-21, -68, 2000);
     chassis.waitUntilDone();
     claw.set_value(true);
     chassis.turnToHeading(0, 800);

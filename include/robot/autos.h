@@ -9,6 +9,7 @@ void left_repeater_route();
 void right_repeater_route();
 void close_3_rush();
 void far_3_rush();
+void far_wall_4();
 
 class Button{
     public:
