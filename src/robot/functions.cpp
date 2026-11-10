@@ -136,3 +136,22 @@ void lift_manual(bool up){
         lift.move_velocity(-60);
     }else{lift.move_velocity(up ? 125 : -120);}
 }
+
+/**
+ * @brief manually position lift 
+ * @param[in] up whether to lift up (true) or down (false)
+ * @param[in] target the current lift target
+ * 
+ * Moves the lift to the next natural level based on the current target.
+ */
+const double levels[] = {0, 2, 9, 16, 23, 30, 37, 44};
+const double neutral_diff = 2.55;
+void lift_pos_manual(bool up){
+    int upper = 0, lower = 0;
+    while(upper < 7 && levels[upper] < target){
+        upper++;
+    }
+    lower = upper - 1;
+
+    target = up ? levels[upper] : levels[lower];
+}
