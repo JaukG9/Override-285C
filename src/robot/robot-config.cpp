@@ -38,16 +38,15 @@ pros::MotorGroup lift({11, -2}, pros::MotorGearset::green);        // lift motor
 
 /* init pistons */
 pros::adi::DigitalOut claw('H');
-pros::adi::DigitalOut claw_rotate('B');
-pros::adi::DigitalOut two_bar('C');
-pros::adi::DigitalOut brake_1('D');
-pros::adi::DigitalOut brake_2('E');
-pros::adi::DigitalOut toggle_1('F');
-pros::adi::DigitalOut toggle_2('G');
+// pros::adi::DigitalOut claw_rotate('B');
+// pros::adi::DigitalOut two_bar('C');
+// pros::adi::DigitalOut brake_1('D');
+// pros::adi::DigitalOut brake_2('E');
+// pros::adi::DigitalOut toggle_1('F');
+// pros::adi::DigitalOut toggle_2('G');
 
 /* init sensors */
-pros::AIVision aivision_back(3);
-pros::AIVision aivision_side(8);
+pros::AIVision aivision(10);
 pros::Rotation rotation(4);
 
 /* global variables */

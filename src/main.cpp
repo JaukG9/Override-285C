@@ -20,7 +20,11 @@ void initialize(){
 	chassis.calibrate();
 	rotation.reset_position();
 
+	aivision.reset();
+	aivision.enable_detection_types(pros::v5::AivisionModeType::objects);
+
 	claw.set_value(true);
+	
 	pros::Task run_lift(lift_PID);
 }
 
@@ -91,6 +95,7 @@ void autonomous(){
 void opcontrol(){
 	bool manual_lifting = false, was_claw_closed = true;
 	pros::Task inputs(get_inputs);
+	pros::Task ai(ground_cup);
 	do_lift_PID = false;
 
 	while (true) {

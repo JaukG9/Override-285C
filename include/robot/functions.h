@@ -14,3 +14,4 @@ void lift_manual(bool up);
 
 extern bool right_arrow, L1, L2, R2, A;
 void get_inputs(void*);
+void ground_cup(void*);

@@ -125,3 +125,39 @@ void lift_manual(bool up){
         lift.move_velocity(-60);
     }else{lift.move_velocity(up ? 125 : -120);}
 }
+
+void ground_cup(void*){
+    while(true){
+        std::vector<pros::aivision_object_s_t> objects = aivision.get_all_objects();
+        bool cup_found = false;
+
+        if(!objects.empty()){
+            auto &closest = objects[0];
+            
+            if(closest.id == 4){
+                double x = closest.object.element.xoffset;
+                double y = closest.object.element.yoffset;
+                double width = closest.object.element.width;
+                double height = closest.object.element.height;
+                int confidence = closest.object.element.score;
+
+                double centerX = x + width / 2;
+                double centerY = y + height / 2;
+
+                if(confidence >= 80 && width > 120){
+                    controller.rumble(". - . -");
+                }
+
+                printf("ID: %d | X: %d | Y: %d | Width: %d | Height: %d | Score: %d%%\n",
+                       closest.id,
+                       closest.object.element.xoffset,
+                       closest.object.element.yoffset,
+                       closest.object.element.width,
+                       closest.object.element.height,
+                       closest.object.element.score);
+            }
+        }
+
+        pros::delay(20);
+    }
+}
